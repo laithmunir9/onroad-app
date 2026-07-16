@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<template id="__bundler_thumbnail" data-bg-color="#030c22">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#030c22"/>
+    <circle cx="600" cy="360" r="150" fill="none" stroke="#35D6A4" stroke-width="10" opacity="0.5"/>
+    <path d="M470 360s58-70 130-70 130 70 130 70-58 70-130 70-130-70-130-70Z" fill="none" stroke="#F5A623" stroke-width="14" stroke-linecap="round"/>
+    <circle cx="600" cy="360" r="42" fill="#F5A623"/>
+    <text x="600" y="560" text-anchor="middle" font-family="Rubik,Arial,sans-serif" font-size="76" font-weight="700" fill="#ffffff">OnRoad</text>
+    <text x="600" y="620" text-anchor="middle" font-family="Rubik,Arial,sans-serif" font-size="30" font-weight="600" letter-spacing="6" fill="#F5A623">DRIVER MONITORING</text>
+  </svg>
+</template>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;padding:0}
+  body{background:#030c22;font-family:'Rubik',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  *{box-sizing:border-box}
+  a{color:#F5A623}a:hover{color:#FFC303}
+  @keyframes breathe{0%,100%{transform:scale(1);opacity:.55}50%{transform:scale(1.08);opacity:1}}
+  @keyframes breatheSlow{0%,100%{transform:scale(1);opacity:.4}50%{transform:scale(1.12);opacity:.85}}
+  @keyframes softpulse{0%,100%{opacity:.5}50%{opacity:1}}
+  @keyframes alarmbg{0%,100%{background:#7d1109}50%{background:#c81e12}}
+  @keyframes alarmring{0%{transform:scale(.85);opacity:.9}70%{transform:scale(1.9);opacity:0}100%{opacity:0}}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-4px)}40%{transform:translateX(4px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @keyframes dot{0%,100%{opacity:.3}50%{opacity:1}}
+  @keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes slideDown{from{transform:translateY(-14px);opacity:0}to{transform:translateY(0);opacity:1}}
+  @keyframes eyepulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+  @keyframes blink{0%,90%,100%{transform:scaleY(1)}94%{transform:scaleY(.12)}}
+  @keyframes chipIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes floatblob{0%,100%{transform:translate(0,0)}50%{transform:translate(26px,-20px)}}
+  ::selection{background:rgba(245,166,35,.3)}
+</style>
+</helmet>
+
+<div style="position:relative;overflow:hidden;min-height:100vh;padding:40px 32px 72px;display:flex;flex-direction:column;align-items:center;background:radial-gradient(120% 80% at 50% -10%,#0a1f45 0%,#030c22 60%)">
+
+  <div style="position:absolute;top:6%;left:10%;width:440px;height:440px;border-radius:50%;background:radial-gradient(circle,rgba(245,166,35,.16),transparent 70%);filter:blur(34px);pointer-events:none;z-index:0;animation:floatblob 15s ease-in-out infinite"></div>
+  <div style="position:absolute;bottom:4%;right:8%;width:480px;height:480px;border-radius:50%;background:radial-gradient(circle,rgba(53,214,164,.12),transparent 70%);filter:blur(40px);pointer-events:none;z-index:0;animation:floatblob 19s ease-in-out infinite reverse"></div>
+  <div style="position:absolute;top:38%;left:44%;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(28,64,120,.5),transparent 70%);filter:blur(46px);pointer-events:none;z-index:0"></div>
+
+  <div style="position:relative;z-index:1;display:flex;align-items:center;gap:16px;margin-bottom:6px">
+    <img src="assets/onroad-logo.png" alt="OnRoad" style="width:52px;height:52px;border-radius:16px;object-fit:cover"/>
+    <div>
+      <div style="font-size:22px;font-weight:700;color:#fff;letter-spacing:-.01em;line-height:1">OnRoad</div>
+      <div style="font-size:12px;font-weight:500;color:#F5A623;letter-spacing:.14em;text-transform:uppercase;margin-top:4px">Driver Monitoring</div>
+    </div>
+  </div>
+  <p style="position:relative;z-index:1;max-width:560px;text-align:center;color:#8298c0;font-size:13.5px;line-height:1.55;margin:10px 0 34px">Interactive prototype — the driver's device stays calm while monitoring; the rider's phone escalates clearly from safe, to soft alert, to alarm. Use the demo panel below to drive the story.</p>
+
+  <div style="position:relative;z-index:1;display:flex;gap:56px;flex-wrap:wrap;justify-content:center;align-items:flex-start">
+
+    <!-- ══════════ DRIVER PHONE ══════════ -->
+    <div style="display:flex;flex-direction:column;align-items:center;gap:14px">
+      <div style="display:flex;align-items:center;gap:9px">
+        <span style="width:8px;height:8px;border-radius:50%;background:#35D6A4;box-shadow:0 0 10px #35D6A4;animation:dot 2.2s ease-in-out infinite"></span>
+        <span style="font-size:12px;font-weight:600;color:#a9bdde;letter-spacing:.13em;text-transform:uppercase">Driver device</span>
+      </div>
+      <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+        <div data-screen-label="Driver — Monitoring" style="height:100%;display:flex;flex-direction:column;padding:66px 26px 34px;background:{{ driverAmbient }};transition:background .8s ease;position:relative;overflow:hidden">
+
+          <!-- top row -->
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="display:flex;align-items:center;gap:9px">
+              <img src="assets/onroad-logo.png" style="width:30px;height:30px;border-radius:8px;object-fit:cover"/>
+              <span style="font-size:15px;font-weight:700;color:#fff">OnRoad</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="display:flex;align-items:center;gap:5px;color:{{ audioColor }}">{{ audioIcon }}<span style="font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase">{{ audioLabel }}</span></div>
+              <span style="font-size:11px;font-weight:600;color:#6f86ad;letter-spacing:.13em;text-transform:uppercase">Driver</span>
+            </div>
+          </div>
+
+          <!-- attention meter core -->
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px">
+            <div style="width:180px;height:180px;border-radius:44px;background:{{ driverEyeBg }};border:2px solid {{ driverRingSoft }};display:flex;align-items:center;justify-content:center;box-shadow:{{ driverEyeGlow }};transition:background .6s ease,box-shadow .6s ease,border-color .6s ease;animation:{{ driverEyeAnim }}">
+              <img src="assets/onroad-logo.png" style="width:104px;height:104px;border-radius:26px;object-fit:cover;filter:drop-shadow(0 6px 16px rgba(0,0,0,.45));animation:blink 6s ease-in-out infinite"/>
+            </div>
+            <div style="text-align:center">
+              <div style="display:inline-flex;align-items:center;gap:8px;padding:7px 16px;border-radius:999px;background:{{ driverChipBg }};transition:background .5s ease">
+                {{ driverBadgeIcon }}
+                <span style="font-size:19px;font-weight:700;letter-spacing:.01em;color:{{ driverStatusColor }};transition:color .5s ease">{{ driverStatusWord }}</span>
+              </div>
+              <div style="font-size:13px;color:#8298c0;margin-top:10px;line-height:1.45">{{ driverStatusSub }}</div>
+            </div>
+            <div style="display:flex;gap:12px;width:100%">
+              <div style="flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:12px 14px;box-shadow:0 8px 22px rgba(3,10,25,.35)">
+                <div style="font-size:10.5px;color:#6f86ad;letter-spacing:.1em;text-transform:uppercase;font-weight:600">Trip time</div>
+                <div style="font-family:'Space Mono',monospace;font-size:20px;font-weight:700;color:#fff;margin-top:3px">{{ elapsedText }}</div>
+              </div>
+              <div style="flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:12px 14px;box-shadow:0 8px 22px rgba(3,10,25,.35)">
+                <div style="font-size:10.5px;color:#6f86ad;letter-spacing:.1em;text-transform:uppercase;font-weight:600">Monitoring</div>
+                <div style="display:flex;align-items:center;gap:7px;margin-top:6px">
+                  <span style="width:9px;height:9px;border-radius:50%;background:{{ driverMonitorColor }};box-shadow:0 0 8px {{ driverMonitorColor }};transition:background .4s ease"></span>
+                  <span style="font-size:15px;font-weight:700;color:#fff">{{ driverMonitorText }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- driver alert reflections -->
+          <sc-if value="{{ dSoft }}">
+            <div style="display:flex;align-items:center;gap:11px;background:rgba(245,166,35,.14);border:1px solid rgba(245,166,35,.5);border-radius:20px;padding:13px 15px;margin-bottom:14px;animation:slideDown .3s ease">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F5A623" stroke-width="2" stroke-linecap="round"><path d="M2 12s3-7 10-7 10 7 10 7"/><path d="m3 3 18 18"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
+              <div><div style="font-size:13.5px;font-weight:700;color:#FFC303">Stay focused</div><div style="font-size:12px;color:#c7b183">Your eyes drifted from the road.</div></div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ dAlarm }}">
+            <div style="display:flex;align-items:center;gap:12px;background:#c81e12;border-radius:20px;padding:16px 16px;margin-bottom:14px;box-shadow:0 0 30px rgba(200,30,18,.5);animation:softpulse 1s ease-in-out infinite">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m21.7 18-9-15.6a1.9 1.9 0 0 0-3.4 0l-9 15.6A1.9 1.9 0 0 0 2 21h18a1.9 1.9 0 0 0 1.7-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+              <div><div style="font-size:16px;font-weight:800;color:#fff;letter-spacing:.02em">EYES ON THE ROAD</div><div style="font-size:12px;color:#ffd7d3">Wake up — pull over if drowsy.</div></div>
+            </div>
+          </sc-if>
+
+          <!-- ride code / connection -->
+          <sc-if value="{{ dWaiting }}" hint-placeholder-val="{{ true }}">
+            <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:24px;padding:18px 18px 16px;display:flex;gap:16px;align-items:center">
+              <div style="width:88px;height:88px;background:#fff;border-radius:16px;padding:7px;flex:none">{{ driverQR }}</div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:11px;font-weight:600;color:#6f86ad;letter-spacing:.13em;text-transform:uppercase">Ride code</div>
+                <div style="font-family:'Space Mono',monospace;font-size:27px;font-weight:700;color:#fff;letter-spacing:.06em;margin:3px 0 6px">R7K-42Q</div>
+                <div style="font-size:11.5px;color:#8298c0;line-height:1.4">Share the code or QR so your rider can follow the ride.</div>
+              </div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ dConnected }}">
+            <div style="display:flex;align-items:center;gap:12px;background:rgba(53,214,164,.1);border:1px solid rgba(53,214,164,.35);border-radius:24px;padding:16px 18px">
+              <div style="width:40px;height:40px;border-radius:50%;background:rgba(53,214,164,.2);display:flex;align-items:center;justify-content:center;flex:none">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#35D6A4" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+              </div>
+              <div style="flex:1"><div style="font-size:14.5px;font-weight:700;color:#fff">Rider connected</div><div style="font-size:12px;color:#8fb9a9">Maya is following this ride · {{ elapsedText }}</div></div>
+              <span style="font-family:'Space Mono',monospace;font-size:12px;color:#6f86ad">R7K-42Q</span>
+            </div>
+          </sc-if>
+        </div>
+      </x-import>
+    </div>
+
+    <!-- ══════════ RIDER PHONE ══════════ -->
+    <div style="display:flex;flex-direction:column;align-items:center;gap:14px">
+      <div style="display:flex;align-items:center;gap:9px">
+        <span style="width:8px;height:8px;border-radius:50%;background:{{ riderDotColor }};box-shadow:0 0 10px {{ riderDotColor }};animation:dot 2.2s ease-in-out infinite"></span>
+        <span style="font-size:12px;font-weight:600;color:#a9bdde;letter-spacing:.13em;text-transform:uppercase">Rider device</span>
+      </div>
+      <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+        <div style="height:100%;position:relative;overflow:hidden;background:#03102a">
+
+          <!-- ── CONNECT / JOIN ── -->
+          <sc-if value="{{ isConnect }}" hint-placeholder-val="{{ true }}">
+            <div data-screen-label="Rider — Connect" style="height:100%;display:flex;flex-direction:column;padding:70px 28px 40px;background:linear-gradient(180deg,#071a3a,#03102a)">
+              <div style="display:flex;align-items:center;gap:9px;margin-bottom:auto">
+                <img src="assets/onroad-logo.png" style="width:30px;height:30px;border-radius:8px;object-fit:cover"/>
+                <span style="font-size:15px;font-weight:700;color:#fff">OnRoad</span>
+              </div>
+              <div style="text-align:center;margin-bottom:34px">
+                <div style="width:70px;height:70px;border-radius:24px;background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.35);display:flex;align-items:center;justify-content:center;margin:0 auto 20px">
+                  <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#F5A623" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                </div>
+                <div style="font-size:25px;font-weight:700;color:#fff;letter-spacing:-.01em">Follow the ride</div>
+                <div style="font-size:14px;color:#8298c0;margin-top:9px;line-height:1.55;max-width:270px;margin-left:auto;margin-right:auto">Enter the ride code from your driver's screen to watch their trip in real time.</div>
+              </div>
+              <div style="font-size:11px;font-weight:600;color:#6f86ad;letter-spacing:.13em;text-transform:uppercase;margin-bottom:10px;text-align:center">Ride code</div>
+              <div style="display:flex;gap:9px;justify-content:center;margin-bottom:26px">
+                <sc-for list="{{ codeChars }}" as="ch" hint-placeholder-count="6">
+                  <div style="width:44px;height:56px;border-radius:16px;background:rgba(255,255,255,.05);border:1.5px solid rgba(245,166,35,.4);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:26px;font-weight:700;color:#fff">{{ ch }}</div>
+                </sc-for>
+              </div>
+              <button onClick="{{ connect }}" style="width:100%;height:56px;border:none;border-radius:20px;background:#F5A623;color:#04122b;font-family:'Rubik';font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 8px 24px rgba(245,166,35,.28)" style-hover="background:#FFC303">
+                Connect to ride
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#04122b" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              </button>
+              <button onClick="{{ connect }}" style="width:100%;height:48px;margin-top:12px;background:transparent;border:1px solid rgba(255,255,255,.14);border-radius:20px;color:#a9bdde;font-family:'Rubik';font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px" style-hover="border-color:rgba(255,255,255,.3)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a9bdde" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3M21 21v.01M12 7v3a2 2 0 0 1-2 2H7M3 12h.01M12 3h.01M12 16v.01M16 12h1M21 12v.01M12 21v-1"/></svg>
+                Scan QR instead
+              </button>
+            </div>
+          </sc-if>
+
+          <!-- ── RIDE (calm + soft share layout) ── -->
+          <sc-if value="{{ isRide }}">
+            <div data-screen-label="Rider — Ride status" style="height:100%;display:flex;flex-direction:column;padding:62px 24px 32px;background:{{ rideBg }}">
+              <!-- driver profile -->
+              <div style="display:flex;align-items:center;gap:13px;margin-bottom:22px">
+                <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#1a3766,#0d2246);border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:#fff;flex:none">DR</div>
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:16px;font-weight:700;color:#fff">Daniel R.</div>
+                  <div style="font-size:12.5px;color:#8298c0;display:flex;align-items:center;gap:6px">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="#F5A623" stroke="none"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>
+                    4.9 · Toyota Camry
+                  </div>
+                </div>
+                <span style="font-family:'Space Mono',monospace;font-size:12.5px;font-weight:700;color:#a9bdde;background:rgba(255,255,255,.06);padding:5px 9px;border-radius:8px">7XR·219</span>
+              </div>
+
+              <!-- live trip summary strip -->
+              <div style="display:flex;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:24px;overflow:hidden;margin-bottom:18px;box-shadow:0 12px 30px rgba(3,10,25,.4)">
+                <div style="flex:1;padding:12px 15px">
+                  <div style="font-size:10px;color:#6f86ad;letter-spacing:.11em;text-transform:uppercase;font-weight:600">Elapsed</div>
+                  <div style="font-family:'Space Mono',monospace;font-size:19px;font-weight:700;color:#fff;margin-top:3px">{{ elapsedText }}</div>
+                </div>
+                <div style="width:1px;background:rgba(255,255,255,.09)"></div>
+                <div style="flex:1;padding:12px 15px">
+                  <div style="font-size:10px;color:#6f86ad;letter-spacing:.11em;text-transform:uppercase;font-weight:600">Attention</div>
+                  <div style="font-family:'Space Mono',monospace;font-size:19px;font-weight:700;color:{{ riderScoreColor }};margin-top:3px;transition:color .5s ease">{{ riderScoreText }}</div>
+                </div>
+                <div style="width:1px;background:rgba(255,255,255,.09)"></div>
+                <div style="flex:1;padding:12px 15px">
+                  <div style="font-size:10px;color:#6f86ad;letter-spacing:.11em;text-transform:uppercase;font-weight:600">Flags</div>
+                  <div style="font-family:'Space Mono',monospace;font-size:19px;font-weight:700;color:{{ alertCountColor }};margin-top:3px;transition:color .4s ease">{{ alertCount }}</div>
+                </div>
+              </div>
+
+              <!-- soft alert banner -->
+              <sc-if value="{{ isSoft }}">
+                <div style="display:flex;align-items:center;gap:12px;background:rgba(245,166,35,.16);border:1.5px solid #F5A623;border-radius:20px;padding:14px 15px;margin-bottom:18px;animation:slideDown .35s ease">
+                  <div style="width:38px;height:38px;border-radius:16px;background:rgba(245,166,35,.22);display:flex;align-items:center;justify-content:center;flex:none;animation:softpulse 1.4s ease-in-out infinite">
+                    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#FFC303" stroke-width="2.2" stroke-linecap="round"><path d="M2 12s3-7 10-7 10 7 10 7"/><path d="m3 3 18 18"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
+                  </div>
+                  <div style="flex:1"><div style="font-size:14.5px;font-weight:700;color:#FFC303">Heads up</div><div style="font-size:12.5px;color:#d8c191;line-height:1.4">{{ softBannerText }}</div></div>
+                </div>
+              </sc-if>
+
+              <!-- status ring -->
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px">
+                <div style="position:relative;width:172px;height:172px;display:flex;align-items:center;justify-content:center">
+                  <div style="position:absolute;inset:0;border-radius:50%;border:2px solid {{ statusRingSoft }};animation:breatheSlow 4.4s ease-in-out infinite;transition:border-color .6s ease"></div>
+                  <div style="width:130px;height:130px;border-radius:50%;background:{{ statusInner }};display:flex;align-items:center;justify-content:center;box-shadow:0 0 44px {{ statusGlow }};transition:background .6s ease,box-shadow .6s ease">
+                    <sc-if value="{{ isCalm }}"><svg width="58" height="58" viewBox="0 0 24 24" fill="none" stroke="#35D6A4" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></sc-if>
+                    <sc-if value="{{ isSoft }}"><svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#F5A623" stroke-width="2.2" stroke-linecap="round"><path d="M2 12s3-7 10-7 10 7 10 7"/><path d="m3 3 18 18"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></sc-if>
+                  </div>
+                </div>
+                <div style="text-align:center">
+                  <div style="font-size:24px;font-weight:700;color:{{ statusColor }};letter-spacing:-.01em;transition:color .5s ease">{{ statusLabel }}</div>
+                  <div style="font-size:13.5px;color:#8298c0;margin-top:6px">{{ statusSub }}</div>
+                </div>
+              </div>
+
+              <!-- live activity ticker -->
+              <div style="margin-bottom:16px">
+                <div style="display:flex;align-items:center;gap:7px;margin-bottom:9px">
+                  <span style="width:7px;height:7px;border-radius:50%;background:{{ riderDotColor }};box-shadow:0 0 8px {{ riderDotColor }};animation:dot 2s ease-in-out infinite;transition:background .5s ease"></span>
+                  <span style="font-size:11px;font-weight:600;color:#6f86ad;letter-spacing:.11em;text-transform:uppercase">Recent activity</span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:7px;min-height:46px">
+                  <sc-if value="{{ hasChips }}">
+                    <sc-for list="{{ riderChips }}" as="chip" hint-placeholder-count="2">
+                      <div style="display:flex;align-items:center;gap:9px;background:{{ chip.bg }};border:1px solid {{ chip.border }};border-radius:16px;padding:8px 12px;opacity:{{ chip.opacity }};animation:chipIn .4s ease">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="{{ chip.color }}" stroke-width="2.2" stroke-linecap="round"><path d="M2 12s3-7 10-7 10 7 10 7"/><path d="m3 3 18 18"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
+                        <span style="font-size:13px;font-weight:600;color:{{ chip.text }};flex:1">{{ chip.label }}</span>
+                        <span style="font-family:'Space Mono',monospace;font-size:11.5px;color:#6f86ad">{{ chip.ago }}</span>
+                      </div>
+                    </sc-for>
+                  </sc-if>
+                  <sc-if value="{{ noChips }}">
+                    <div style="display:flex;align-items:center;gap:9px;background:rgba(53,214,164,.09);border:1px solid rgba(53,214,164,.25);border-radius:16px;padding:8px 12px">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#35D6A4" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                      <span style="font-size:13px;font-weight:600;color:#8fb9a9">No recent distractions</span>
+                    </div>
+                  </sc-if>
+                </div>
+              </div>
+
+              <button onClick="{{ askEnd }}" style="width:100%;height:56px;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.16);border-radius:20px;color:#fff;font-family:'Rubik';font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px" style-hover="border-color:#FF5545;background:rgba(255,59,48,.1);color:#FF7A70">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="5" width="14" height="14" rx="2"/></svg>
+                End Ride
+              </button>
+            </div>
+          </sc-if>
+
+          <!-- ── URGENT ALARM (full takeover) ── -->
+          <sc-if value="{{ isAlarm }}">
+            <div data-screen-label="Rider — ALARM" style="height:100%;display:flex;flex-direction:column;align-items:center;padding:66px 26px 32px;animation:alarmbg 1.1s ease-in-out infinite;position:relative">
+              <div style="display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.28);padding:7px 14px;border-radius:999px">
+                <span style="width:8px;height:8px;border-radius:50%;background:#fff;animation:softpulse .7s ease-in-out infinite"></span>
+                <span style="font-size:12px;font-weight:700;color:#fff;letter-spacing:.14em">ALARM SOUNDING</span>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;width:100%">
+                <div style="position:relative;width:172px;height:172px;display:flex;align-items:center;justify-content:center">
+                  <div style="position:absolute;inset:0;border-radius:50%;border:3px solid rgba(255,255,255,.7);animation:alarmring 1.4s ease-out infinite"></div>
+                  <div style="position:absolute;inset:0;border-radius:50%;border:3px solid rgba(255,255,255,.7);animation:alarmring 1.4s ease-out .7s infinite"></div>
+                  <div style="width:120px;height:120px;border-radius:50%;background:rgba(0,0,0,.22);display:flex;align-items:center;justify-content:center;animation:shake .5s ease-in-out infinite">
+                    <svg width="66" height="66" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.7 18-9-15.6a1.9 1.9 0 0 0-3.4 0l-9 15.6A1.9 1.9 0 0 0 2 21h18a1.9 1.9 0 0 0 1.7-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                  </div>
+                </div>
+                <div style="text-align:center">
+                  <div style="font-size:30px;font-weight:800;color:#fff;letter-spacing:.01em;line-height:1.05">DRIVER<br/>DISTRACTED</div>
+                  <div style="display:inline-flex;align-items:center;gap:8px;margin-top:16px;background:rgba(0,0,0,.28);padding:8px 16px;border-radius:999px">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M2 12s3-7 10-7 10 7 10 7"/><path d="m3 3 18 18"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
+                    <span style="font-size:15px;font-weight:700;color:#fff">{{ alarmTypeText }}</span>
+                  </div>
+                  <div style="font-size:14px;color:#ffd7d3;margin-top:14px;line-height:1.5">Get the driver's attention now.<br/>Ask them to pull over safely.</div>
+                </div>
+              </div>
+              <button onClick="{{ askEnd }}" style="width:100%;height:60px;background:#fff;border:none;border-radius:20px;color:#c81e12;font-family:'Rubik';font-size:17px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 10px 30px rgba(0,0,0,.28)" style-hover="background:#ffecea">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c81e12" stroke-width="2.6" stroke-linecap="round"><rect x="5" y="5" width="14" height="14" rx="3"/></svg>
+                End Ride
+              </button>
+            </div>
+          </sc-if>
+
+          <!-- ── SUMMARY ── -->
+          <sc-if value="{{ isSummary }}">
+            <div data-screen-label="Rider — Summary" style="height:100%;overflow:auto;padding:66px 24px 36px;background:linear-gradient(180deg,#071a3a,#03102a)">
+              <div style="font-size:11px;font-weight:600;color:#6f86ad;letter-spacing:.13em;text-transform:uppercase">Ride complete</div>
+              <div style="font-size:26px;font-weight:700;color:#fff;letter-spacing:-.01em;margin:5px 0 3px">Ride Summary</div>
+              <div style="font-size:13px;color:#8298c0">Daniel R. · {{ elapsedText }} · Today, 4:12 PM</div>
+
+              <!-- score gauge -->
+              <div style="display:flex;align-items:center;gap:20px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:20px;margin:22px 0 16px">
+                <div style="position:relative;width:96px;height:96px;flex:none">{{ scoreGauge }}</div>
+                <div>
+                  <div style="font-size:12px;font-weight:600;color:#6f86ad;letter-spacing:.1em;text-transform:uppercase">Safety score</div>
+                  <div style="font-size:20px;font-weight:700;color:{{ scoreColor }};margin-top:3px">{{ scoreLabel }}</div>
+                  <div style="font-size:12.5px;color:#8298c0;margin-top:4px;line-height:1.45;max-width:150px">{{ scoreNote }}</div>
+                </div>
+              </div>
+
+              <!-- total events -->
+              <div style="background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:18px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between">
+                <div><div style="font-size:13px;color:#8298c0;font-weight:500">Distraction events</div><div style="font-size:12px;color:#6f86ad;margin-top:2px">Detected during the ride</div></div>
+                <div style="font-family:'Space Mono',monospace;font-size:40px;font-weight:700;color:{{ scoreColor }};line-height:1">{{ totalEvents }}</div>
+              </div>
+
+              <!-- breakdown -->
+              <div style="background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:20px;margin-bottom:16px">
+                <div style="font-size:12px;font-weight:600;color:#6f86ad;letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px">By type</div>
+                <div style="display:flex;align-items:center;gap:11px;margin-bottom:14px">
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F5A623" stroke-width="2" stroke-linecap="round"><path d="M2 12s3-7 10-7 10 7 10 7"/><path d="m3 3 18 18"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
+                  <div style="flex:1">
+                    <div style="display:flex;justify-content:space-between;font-size:13.5px;color:#e8eefb;font-weight:600;margin-bottom:6px"><span>Looked Away</span><span style="font-family:'Space Mono',monospace">{{ laCount }}</span></div>
+                    <div style="height:8px;border-radius:4px;background:rgba(255,255,255,.07)"><div style="height:100%;border-radius:4px;background:#F5A623;width:{{ laPct }}"></div></div>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:11px">
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#FF5545" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7"/><path d="m3 3 18 18"/><path d="M12 5c-1 0-1.5.4-2 1M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
+                  <div style="flex:1">
+                    <div style="display:flex;justify-content:space-between;font-size:13.5px;color:#e8eefb;font-weight:600;margin-bottom:6px"><span>Eyes Closed</span><span style="font-family:'Space Mono',monospace">{{ ecCount }}</span></div>
+                    <div style="height:8px;border-radius:4px;background:rgba(255,255,255,.07)"><div style="height:100%;border-radius:4px;background:#FF5545;width:{{ ecPct }}"></div></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- timeline -->
+              <div style="background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:20px 20px 16px;margin-bottom:22px">
+                <div style="font-size:12px;font-weight:600;color:#6f86ad;letter-spacing:.1em;text-transform:uppercase;margin-bottom:20px">When they happened</div>
+                <div style="position:relative;height:34px;margin:0 4px">
+                  <div style="position:absolute;top:16px;left:0;right:0;height:3px;border-radius:2px;background:rgba(255,255,255,.1)"></div>
+                  <sc-for list="{{ timelineEvents }}" as="ev" hint-placeholder-count="5">
+                    <div style="position:absolute;top:8px;transform:translateX(-50%);left:{{ ev.left }}"><div style="width:15px;height:15px;border-radius:50%;background:{{ ev.color }};border:2.5px solid #0c1e40;box-shadow:0 0 10px {{ ev.glow }}"></div></div>
+                  </sc-for>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:11px;color:#6f86ad;margin-top:2px"><span>0:00</span><span>{{ elapsedText }}</span></div>
+              </div>
+
+              <button onClick="{{ reset }}" style="width:100%;height:54px;background:#F5A623;border:none;border-radius:20px;color:#04122b;font-family:'Rubik';font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 8px 24px rgba(245,166,35,.24)" style-hover="background:#FFC303">Done</button>
+            </div>
+          </sc-if>
+
+          <!-- ── SIGNAL LOST ── -->
+          <sc-if value="{{ isLost }}">
+            <div data-screen-label="Rider — Connection lost" style="height:100%;display:flex;flex-direction:column;padding:70px 26px 32px;background:linear-gradient(180deg,#141b2c,#080c16)">
+              <div style="display:flex;align-items:center;gap:9px;margin-bottom:auto">
+                <img src="assets/onroad-logo.png" style="width:30px;height:30px;border-radius:9px;object-fit:cover"/>
+                <span style="font-size:15px;font-weight:700;color:#fff">OnRoad</span>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px">
+                <div style="position:relative;width:120px;height:120px;display:flex;align-items:center;justify-content:center">
+                  <div style="position:absolute;inset:0;border-radius:50%;border:3px solid rgba(138,160,200,.16);border-top-color:#8aa0c8;animation:spin 1.1s linear infinite"></div>
+                  <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#8aa0c8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h.01"/><path d="M8.5 16.4a5 5 0 0 1 7 0"/><path d="m2 8.8 20 6.4"/><path d="m2 2 20 20"/></svg>
+                </div>
+                <div style="text-align:center">
+                  <div style="font-size:23px;font-weight:700;color:#fff">Connection lost</div>
+                  <div style="font-size:13.5px;color:#8298c0;margin-top:9px;line-height:1.55;max-width:250px">Trying to reconnect to Daniel's device. Monitoring is paused until the signal returns.</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:9px;background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.3);border-radius:14px;padding:10px 14px">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#F5A623" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.7 18-9-15.6a1.9 1.9 0 0 0-3.4 0l-9 15.6A1.9 1.9 0 0 0 2 21h18a1.9 1.9 0 0 0 1.7-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                  <span style="font-size:12.5px;font-weight:600;color:#e6c98f">Monitoring paused · {{ elapsedText }}</span>
+                </div>
+              </div>
+              <button onClick="{{ askEnd }}" style="width:100%;height:56px;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.16);border-radius:20px;color:#fff;font-family:'Rubik';font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px" style-hover="border-color:#FF5545;background:rgba(255,59,48,.1);color:#FF7A70">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="5" width="14" height="14" rx="3"/></svg>
+                End Ride
+              </button>
+            </div>
+          </sc-if>
+
+          <!-- ── END-RIDE CONFIRM SHEET ── -->
+          <sc-if value="{{ showEnd }}">
+            <div style="position:absolute;inset:0;z-index:80;background:rgba(3,10,25,.72);animation:fadeIn .2s ease;display:flex;flex-direction:column;justify-content:flex-end" onClick="{{ cancelEnd }}">
+              <div onClick="{{ stop }}" style="background:#0c1e40;border-top:1px solid rgba(255,255,255,.1);border-radius:28px 26px 0 0;padding:28px 24px 40px;animation:sheetUp .28s cubic-bezier(.2,.8,.2,1)">
+                <div style="width:40px;height:4px;border-radius:2px;background:rgba(255,255,255,.2);margin:0 auto 22px"></div>
+                <div style="font-size:21px;font-weight:700;color:#fff;text-align:center">End this ride?</div>
+                <div style="font-size:14px;color:#8298c0;text-align:center;margin:9px 0 26px;line-height:1.5">Monitoring will stop and you'll get a<br/>safety summary for the trip.</div>
+                <button onClick="{{ confirmEnd }}" style="width:100%;height:56px;background:#FF3B30;border:none;border-radius:20px;color:#fff;font-family:'Rubik';font-size:16px;font-weight:700;cursor:pointer;margin-bottom:11px" style-hover="background:#E5342A">End Ride &amp; view summary</button>
+                <button onClick="{{ cancelEnd }}" style="width:100%;height:52px;background:transparent;border:1px solid rgba(255,255,255,.16);border-radius:20px;color:#a9bdde;font-family:'Rubik';font-size:15px;font-weight:600;cursor:pointer">Keep watching</button>
+              </div>
+            </div>
+          </sc-if>
+
+        </div>
+      </x-import>
+    </div>
+  </div>
+
+  <!-- ══════════ DEMO CONTROL PANEL ══════════ -->
+  <div style="position:relative;z-index:1;margin-top:40px;width:100%;max-width:900px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:22px 24px">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:18px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F5A623" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v18"/><path d="M18 3v18"/><path d="m9 8 6 4-6 4V8Z"/></svg>
+        <span style="font-size:13px;font-weight:700;color:#fff;letter-spacing:.05em">DEMO CONTROLS</span>
+        <span style="font-size:12px;color:#6f86ad;padding-left:10px;border-left:1px solid rgba(255,255,255,.12)">Current: <b style="color:{{ stepColor }};font-weight:700">{{ stepLabel }}</b></span>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <button onClick="{{ toggleSettings }}" style="height:40px;padding:0 14px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);color:#a9bdde;font-family:'Rubik';font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:7px" style-hover="border-color:rgba(255,255,255,.3);color:#fff"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</button>
+        <button onClick="{{ toggleMute }}" style="height:40px;padding:0 16px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);color:#a9bdde;font-family:'Rubik';font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:7px" style-hover="border-color:rgba(255,255,255,.3);color:#fff">{{ audioIcon }}{{ muteLabel }}</button>
+        <button onClick="{{ toggleAuto }}" style="height:40px;padding:0 18px;border-radius:16px;background:{{ autoBg }};border:1px solid {{ autoBorder }};color:{{ autoText }};font-family:'Rubik';font-size:13.5px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px">
+          {{ autoLabel }}
+        </button>
+      </div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:10px">
+      <button onClick="{{ connect }}" style="flex:1;min-width:120px;height:46px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#e8eefb;font-family:'Rubik';font-size:13.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px" style-hover="border-color:#35D6A4;color:#35D6A4">Start ride</button>
+      <button onClick="{{ startLookAway }}" style="flex:1;min-width:120px;height:46px;border-radius:16px;background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.3);color:#F5A623;font-family:'Rubik';font-size:13.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px" style-hover="background:rgba(245,166,35,.2)">Driver looks away</button>
+      <button onClick="{{ startEyesClosed }}" style="flex:1;min-width:120px;height:46px;border-radius:16px;background:rgba(255,59,48,.12);border:1px solid rgba(255,59,48,.4);color:#FF7A70;font-family:'Rubik';font-size:13.5px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px" style-hover="background:rgba(255,59,48,.24)">Driver closes eyes</button>
+      <button onClick="{{ fireLost }}" style="flex:1;min-width:110px;height:46px;border-radius:16px;background:rgba(138,160,200,.1);border:1px solid rgba(138,160,200,.32);color:#aebdd6;font-family:'Rubik';font-size:13.5px;font-weight:600;cursor:pointer" style-hover="background:rgba(138,160,200,.2)">Signal lost</button>
+      <button onClick="{{ refocus }}" style="flex:1;min-width:110px;height:46px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#e8eefb;font-family:'Rubik';font-size:13.5px;font-weight:600;cursor:pointer" style-hover="border-color:#35D6A4;color:#35D6A4">Driver refocuses</button>
+      <button onClick="{{ viewSummary }}" style="flex:1;min-width:110px;height:46px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#e8eefb;font-family:'Rubik';font-size:13.5px;font-weight:600;cursor:pointer" style-hover="border-color:#F5A623;color:#F5A623">Summary</button>
+      <button onClick="{{ reset }}" style="flex:1;min-width:90px;height:46px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#8298c0;font-family:'Rubik';font-size:13.5px;font-weight:600;cursor:pointer" style-hover="color:#fff;border-color:rgba(255,255,255,.3)">Reset</button>
+    </div>
+
+    <sc-if value="{{ showSettings }}">
+      <div style="margin-top:18px;padding-top:18px;border-top:1px solid rgba(255,255,255,.1)">
+        <div style="font-size:11px;font-weight:700;color:#a9bdde;letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px">Alert settings</div>
+        <div style="display:flex;flex-wrap:wrap;gap:22px">
+          <div style="flex:1;min-width:200px">
+            <div style="display:flex;justify-content:space-between;font-size:12.5px;color:#c7d3e8;font-weight:600;margin-bottom:9px"><span>Soft alert after</span><span style="font-family:'Space Mono',monospace;color:#F5A623">{{ softAfter }}s</span></div>
+            <input type="range" min="2" max="10" step="1" value="{{ softAfter }}" onInput="{{ setSoft }}" style="width:100%;accent-color:#F5A623;cursor:pointer"/>
+          </div>
+          <div style="flex:1;min-width:200px">
+            <div style="display:flex;justify-content:space-between;font-size:12.5px;color:#c7d3e8;font-weight:600;margin-bottom:9px"><span>Alarm after</span><span style="font-family:'Space Mono',monospace;color:#FF5545">{{ alarmAfter }}s</span></div>
+            <input type="range" min="6" max="30" step="1" value="{{ alarmAfter }}" onInput="{{ setAlarm }}" style="width:100%;accent-color:#FF5545;cursor:pointer"/>
+          </div>
+          <div style="flex:1;min-width:200px">
+            <div style="display:flex;justify-content:space-between;font-size:12.5px;color:#c7d3e8;font-weight:600;margin-bottom:9px"><span>Alarm volume</span><span style="font-family:'Space Mono',monospace;color:#35D6A4">{{ volPct }}</span></div>
+            <input type="range" min="0" max="100" step="5" value="{{ volPct100 }}" onInput="{{ setVol }}" style="width:100%;accent-color:#35D6A4;cursor:pointer"/>
+          </div>
+        </div>
+        <div style="font-size:11.5px;color:#6f86ad;margin-top:14px;line-height:1.5">A distraction escalates by how long it lasts: after {{ softAfter }}s it becomes a soft alert, after {{ alarmAfter }}s a full alarm. A quick glance or blink under {{ softAfter }}s never alerts.</div>
+      </div>
+    </sc-if>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const DEMO = [
+  {type:'looked_away', t:74, dur:7, tier:'soft'},
+  {type:'eyes_closed', t:138, dur:17, tier:'alarm'},
+  {type:'looked_away', t:221, dur:8, tier:'soft'},
+  {type:'looked_away', t:352, dur:6, tier:'soft'},
+  {type:'eyes_closed', t:471, dur:19, tier:'alarm'},
+];
+const DEMO_ELAPSED = 512;
+
+class Component extends DCLogic {
+  state = {
+    session:'idle', elapsed:0, events:[], samples:[], attention:100,
+    distraction:null, distractionSecs:0,
+    showEnd:false, showSettings:false, auto:false, muted:false,
+    settings:{ softAfter:5, alarmAfter:15, volume:0.7 },
+  };
+  timers = [];
+
+  componentDidMount(){
+    this.tick = setInterval(()=>{
+      if(this.state.session!=='live') return;
+      this.setState(s=>{
+        const patch = { elapsed: s.elapsed+1 };
+        const dist = s.distraction;
+        if(dist){
+          const before = s.distractionSecs, secs = before+1;
+          patch.distractionSecs = secs;
+          const S=s.settings.softAfter, A=s.settings.alarmAfter;
+          if(!s.muted){
+            if(before<S && secs>=S && secs<A) this.playSoft();
+            if(before<A && secs>=A) this.startAlarm();
+          }
+        }
+        const distracted = !!dist;
+        const target = distracted ? Math.max(12, 92 - s.distractionSecs*6) : 95;
+        const j = (Math.random()-0.5)*(distracted?10:6);
+        let a = s.attention + (target - s.attention)*0.45 + j;
+        a = Math.max(8, Math.min(100, a));
+        patch.attention = a; patch.samples = [...s.samples, a];
+        return patch;
+      });
+    }, 1000);
+  }
+  componentWillUnmount(){ clearInterval(this.tick); this.clearTimers(); this.stopAlarm(); }
+  clearTimers(){ this.timers.forEach(clearTimeout); this.timers = []; }
+
+  // ---------- audio ----------
+  ensureAudio(){ if(!this.actx){ try{ this.actx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ this.actx=null; } } if(this.actx && this.actx.state==='suspended') this.actx.resume(); return this.actx; }
+  beep(freq,dur,base,type){ const ac=this.ensureAudio(); if(!ac) return; const vol=base*(this.state.settings.volume); if(vol<=0) return; const o=ac.createOscillator(),g=ac.createGain(); o.type=type||'sine'; o.frequency.value=freq; o.connect(g); g.connect(ac.destination); const t=ac.currentTime; g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(vol,t+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t+dur); o.start(t); o.stop(t+dur+0.03); }
+  playSoft(){ this.beep(660,0.28,0.16,'sine'); }
+  playAlarmPulse(){ this.beep(900,0.16,0.3,'square'); setTimeout(()=>this.beep(680,0.18,0.3,'square'),190); }
+  startAlarm(){ this.stopAlarm(); this.playAlarmPulse(); this.alarmInt=setInterval(()=>this.playAlarmPulse(),850); }
+  stopAlarm(){ if(this.alarmInt){ clearInterval(this.alarmInt); this.alarmInt=null; } }
+  playDisconnect(){ this.beep(500,0.18,0.14,'sine'); setTimeout(()=>this.beep(360,0.28,0.14,'sine'),160); }
+
+  // ---------- session / distraction ----------
+  goLive(cb){ this.stopAlarm(); this.setState(s=>({ session:'live', showEnd:false, elapsed: s.session==='idle'?0:s.elapsed, events: s.session==='idle'?[]:s.events, samples: s.session==='idle'?[]:s.samples, distraction:null, distractionSecs:0 }), cb); }
+  connect(){ this.stopAuto(); this.ensureAudio(); this.goLive(); }
+  ensureLive(cb){ if(this.state.session!=='live') this.goLive(cb); else cb(); }
+  _startDist(type){ this.setState(s=>{ if(s.session!=='live') return {}; return { distraction:{ type, startedAt:s.elapsed }, distractionSecs:0 }; }); }
+  startLookAway(){ this.stopAuto(); this.ensureAudio(); this.ensureLive(()=>this._startDist('looked_away')); }
+  startEyesClosed(){ this.stopAuto(); this.ensureAudio(); this.ensureLive(()=>this._startDist('eyes_closed')); }
+  refocus(){ this.stopAuto(); this._endDist(); }
+  _endDist(){
+    this.stopAlarm();
+    this.setState(s=>{
+      if(!s.distraction) return {};
+      const S=s.settings.softAfter, A=s.settings.alarmAfter, secs=s.distractionSecs;
+      let events=s.events;
+      if(secs>=S){ const tier = secs>=A ? 'alarm' : 'soft'; events=[...s.events,{ type:s.distraction.type, t:s.distraction.startedAt, dur:secs, tier }]; }
+      return { distraction:null, distractionSecs:0, events };
+    });
+  }
+  fireLost(){ this.stopAuto(); this.stopAlarm(); if(!this.state.muted) this.playDisconnect(); this.setState({ session:'lost', showEnd:false, distraction:null, distractionSecs:0 }); }
+
+  askEnd(){ this.setState({ showEnd:true }); }
+  cancelEnd(){ this.setState({ showEnd:false }); }
+  stop(e){ if(e && e.stopPropagation) e.stopPropagation(); }
+  confirmEnd(){ this.stopAuto(); this.stopAlarm(); this.seedIfEmpty(); }
+  viewSummary(){ this.stopAuto(); this.stopAlarm(); this.seedIfEmpty(); }
+  seedIfEmpty(){ this.setState(s=>{ const empty=s.events.length<2; return { session:'summary', showEnd:false, distraction:null, distractionSecs:0, events: empty?DEMO:s.events, elapsed: empty?DEMO_ELAPSED:s.elapsed }; }); }
+  reset(){ this.stopAuto(); this.stopAlarm(); this.setState({ session:'idle', elapsed:0, events:[], samples:[], distraction:null, distractionSecs:0, showEnd:false }); }
+
+  // ---------- settings ----------
+  toggleSettings(){ this.setState(s=>({ showSettings:!s.showSettings })); }
+  setSoft(e){ const v=+e.target.value; this.setState(s=>({ settings:{ ...s.settings, softAfter: Math.min(v, s.settings.alarmAfter-1) } })); }
+  setAlarm(e){ const v=+e.target.value; this.setState(s=>({ settings:{ ...s.settings, alarmAfter: Math.max(v, s.settings.softAfter+1) } })); }
+  setVol(e){ const v=(+e.target.value)/100; this.setState(s=>({ settings:{ ...s.settings, volume:v } })); }
+  toggleMute(){ this.ensureAudio(); this.setState(s=>{ const m=!s.muted; if(m) this.stopAlarm(); return { muted:m }; }); }
+
+  // ---------- auto demo ----------
+  stopAuto(){ this.clearTimers(); if(this.state.auto) this.setState({ auto:false }); }
+  toggleAuto(){
+    if(this.state.auto){ this.stopAuto(); this.stopAlarm(); return; }
+    this.clearTimers(); this.stopAlarm(); this.ensureAudio();
+    this.setState({ session:'idle', elapsed:0, events:[], samples:[], distraction:null, distractionSecs:0, showEnd:false, auto:true });
+    const S=this.state.settings.softAfter, A=this.state.settings.alarmAfter;
+    let t=0; const at=(d,fn)=>{ t+=d; this.timers.push(setTimeout(fn,t)); };
+    at(700, ()=>this.setState({ session:'live', elapsed:0, events:[], samples:[], distraction:null, distractionSecs:0 }));
+    at(2600, ()=>this._startDist('looked_away'));
+    at((S+2)*1000, ()=>this._endDist());
+    at(2600, ()=>this._startDist('eyes_closed'));
+    at((A+2)*1000, ()=>this._endDist());
+    at(2600, ()=>this.setState({ session:'summary', auto:false }));
+  }
+
+  fmt(sec){ const m=Math.floor(sec/60); const s=sec%60; return m+':'+String(s).padStart(2,'0'); }
+
+  makeQR(){
+    const n=21, rects=[];
+    let seed=778291;
+    const rnd=()=>{ seed=(seed*1103515245+12345)&0x7fffffff; return (seed>>17)&1; };
+    const finderCell=(x,y,bx,by)=>{ const lx=x-bx, ly=y-by; const edge=lx===0||lx===6||ly===0||ly===6; const core=lx>=2&&lx<=4&&ly>=2&&ly<=4; return edge||core; };
+    for(let y=0;y<n;y++) for(let x=0;x<n;x++){
+      let on;
+      if(x<7&&y<7) on=finderCell(x,y,0,0);
+      else if(x>=n-7&&y<7) on=finderCell(x,y,n-7,0);
+      else if(x<7&&y>=n-7) on=finderCell(x,y,0,n-7);
+      else if((x<8&&y<8)||(x>=n-8&&y<8)||(x<8&&y>=n-8)) on=false;
+      else on=rnd()===1;
+      if(on) rects.push(React.createElement('rect',{key:x+'_'+y,x,y,width:1,height:1,fill:'#04122b'}));
+    }
+    return React.createElement('svg',{viewBox:'0 0 '+n+' '+n,width:'100%',height:'100%',shapeRendering:'crispEdges',style:{display:'block'}}, rects);
+  }
+
+  makeGauge(score, color){
+    const r=42, c=2*Math.PI*r, off=c*(1-score/100);
+    return React.createElement('svg',{viewBox:'0 0 96 96',width:96,height:96},[
+      React.createElement('circle',{key:'bg',cx:48,cy:48,r,fill:'none',stroke:'rgba(255,255,255,.09)',strokeWidth:8}),
+      React.createElement('circle',{key:'fg',cx:48,cy:48,r,fill:'none',stroke:color,strokeWidth:8,strokeLinecap:'round',strokeDasharray:c,strokeDashoffset:off,transform:'rotate(-90 48 48)'}),
+      React.createElement('text',{key:'t',x:48,y:54,textAnchor:'middle',fontFamily:'Space Mono, monospace',fontSize:26,fontWeight:700,fill:'#fff'}, String(score)),
+    ]);
+  }
+
+  makeStateIcon(phase, color){
+    const el=(t,a)=>React.createElement(t,a);
+    const wrap=(kids)=>React.createElement('svg',{width:18,height:18,viewBox:'0 0 24 24',fill:'none',stroke:color,strokeWidth:2.4,strokeLinecap:'round',strokeLinejoin:'round',style:{transition:'stroke .5s ease'}},kids);
+    if(phase==='alarm') return wrap([el('path',{key:1,d:'m21.7 18-9-15.6a1.9 1.9 0 0 0-3.4 0l-9 15.6A1.9 1.9 0 0 0 2 21h18a1.9 1.9 0 0 0 1.7-3Z'}),el('path',{key:2,d:'M12 9v4'}),el('path',{key:3,d:'M12 17h.01'})]);
+    if(phase==='soft') return wrap([el('path',{key:1,d:'M2 12s3-7 10-7 10 7 10 7'}),el('path',{key:2,d:'m3 3 18 18'}),el('path',{key:3,d:'M9.9 9.9a3 3 0 0 0 4.2 4.2'})]);
+    if(phase==='lost') return wrap([el('path',{key:1,d:'M12 20h.01'}),el('path',{key:2,d:'M8.5 16.4a5 5 0 0 1 7 0'}),el('path',{key:3,d:'m2 8.8 20 6.4'}),el('path',{key:4,d:'m2 2 20 20'})]);
+    if(phase==='idle') return wrap([el('circle',{key:1,cx:12,cy:12,r:9}),el('path',{key:2,d:'M12 7v5l3 2'})]);
+    return wrap([el('path',{key:1,d:'M21.8 10A10 10 0 1 1 12 2'}),el('path',{key:2,d:'m9 11 3 3L21.5 4.5'})]);
+  }
+
+  makeAudioIcon(muted, color){
+    const el=(t,a)=>React.createElement(t,a);
+    const kids=[el('path',{key:1,d:'M11 5 6 9H2v6h4l5 4z'})];
+    if(muted){ kids.push(el('path',{key:2,d:'m22 9-6 6'}),el('path',{key:3,d:'m16 9 6 6'})); }
+    else { kids.push(el('path',{key:2,d:'M15.5 8.5a5 5 0 0 1 0 7'}),el('path',{key:3,d:'M19 5a9 9 0 0 1 0 14'})); }
+    return React.createElement('svg',{width:14,height:14,viewBox:'0 0 24 24',fill:'none',stroke:color,strokeWidth:2,strokeLinecap:'round',strokeLinejoin:'round'},kids);
+  }
+
+  renderVals(){
+    const { elapsed, events, samples, session, distraction, distractionSecs, showEnd, showSettings, auto, muted, settings } = this.state;
+
+    let phase;
+    if(session==='idle') phase='idle';
+    else if(session==='lost') phase='lost';
+    else if(session==='summary') phase='summary';
+    else phase = distraction ? (distractionSecs>=settings.alarmAfter?'alarm': distractionSecs>=settings.softAfter?'soft':'calm') : 'calm';
+
+    const isSoft = phase==='soft';
+    const isCalm = phase==='calm';
+    const active = session==='live';
+    const liveColor = phase==='alarm' ? '#FF5545' : isSoft ? '#F5A623' : phase==='idle' ? '#6f86ad' : '#35D6A4';
+    const driverColor = phase==='lost' ? '#8aa0c8' : liveColor;
+    const meterPct = Math.round(this.state.attention);
+
+    const distType = distraction ? (distraction.type==='eyes_closed' ? 'Eyes closed' : 'Looking away') : '';
+    const distPast = distraction ? (distraction.type==='eyes_closed' ? 'closed their eyes' : 'looked away') : '';
+
+    const la = events.filter(e=>e.type==='looked_away').length;
+    const ec = events.filter(e=>e.type==='eyes_closed').length;
+    const total = events.length;
+    const avgLive = samples.length ? Math.round(samples.reduce((a,b)=>a+b,0)/samples.length) : null;
+    const score = avgLive!=null ? avgLive : Math.max(42, 100 - la*5 - ec*11);
+    const scoreColor = score>=88 ? '#35D6A4' : score>=72 ? '#F5A623' : '#FF5545';
+    const scoreLabel = score>=88 ? 'Excellent' : score>=72 ? 'Good' : score>=58 ? 'Fair' : 'Needs attention';
+    const scoreNote = avgLive!=null ? 'Trip average based on driver attention throughout the ride.'
+      : (score>=88 ? 'Focused and alert throughout the ride.' : score>=72 ? 'A few brief distractions, mostly attentive.' : 'Several distraction events \u2014 worth a check-in.');
+    const maxT = Math.max(elapsed, ...events.map(e=>e.t), 1);
+    const timelineEvents = events.map((e)=>({
+      left: (8 + (e.t/maxT)*84).toFixed(1)+'%',
+      color: e.type==='eyes_closed' ? '#FF5545' : '#F5A623',
+      glow: e.type==='eyes_closed' ? 'rgba(255,85,69,.7)' : 'rgba(245,166,35,.6)',
+    }));
+    const chips = active ? events.filter(e=> elapsed - e.t < 60).slice(-3).reverse().map((e)=>{
+      const ago = Math.max(0, elapsed - e.t);
+      const ecx = e.type==='eyes_closed';
+      return {
+        label: (ecx?'Eyes closed':'Looked away') + ' \u00b7 ' + (e.dur||0) + 's',
+        ago: ago+'s ago',
+        color: ecx ? '#FF5545' : '#F5A623',
+        text: ecx ? '#ffb3ad' : '#f0cf94',
+        bg: ecx ? 'rgba(255,85,69,.12)' : 'rgba(245,166,35,.12)',
+        border: ecx ? 'rgba(255,85,69,.35)' : 'rgba(245,166,35,.3)',
+        opacity: Math.max(0.4, 1 - ago/80).toFixed(2),
+      };
+    }) : [];
+
+    const stepMap = {
+      idle:['Waiting for rider','#6f86ad'], calm:['Normal ride','#35D6A4'],
+      soft:['Soft alert','#F5A623'], alarm:['URGENT ALARM','#FF5545'], summary:['Summary','#F5A623'], lost:['Signal lost','#8aa0c8'],
+    };
+
+    return {
+      isConnect: phase==='idle',
+      isRide: isCalm || isSoft,
+      isCalm, isSoft,
+      isAlarm: phase==='alarm',
+      isSummary: phase==='summary',
+      isLost: phase==='lost',
+      showEnd,
+      dWaiting: phase==='idle',
+      dConnected: session==='live' || session==='lost',
+      dSoft: isSoft,
+      dAlarm: phase==='alarm',
+      elapsedText: this.fmt(elapsed),
+      alertCount: total,
+      alertCountColor: total>0 ? '#F5A623' : '#35D6A4',
+      codeChars: ['R','7','K','4','2','Q'],
+      driverQR: this.makeQR(),
+      riderDotColor: phase==='alarm' ? '#FF5545' : isSoft ? '#F5A623' : phase==='lost' ? '#8aa0c8' : phase==='idle' ? '#6f86ad' : '#35D6A4',
+      // driver
+      driverStatusColor: driverColor,
+      driverRingSoft: phase==='alarm'?'rgba(255,85,69,.45)':isSoft?'rgba(245,166,35,.45)':phase==='lost'?'rgba(138,160,200,.35)':phase==='idle'?'rgba(111,134,173,.25)':'rgba(53,214,164,.3)',
+      driverEyeBg: phase==='alarm'?'radial-gradient(circle at 50% 40%,#5e1512,#2a0906)':isSoft?'radial-gradient(circle at 50% 40%,#3a2c0d,#1a1405)':phase==='lost'?'radial-gradient(circle at 50% 40%,#1a2438,#0c1220)':'radial-gradient(circle at 50% 40%,#0d2c56,#071a3a)',
+      driverEyeGlow: '0 0 44px '+driverColor+'33',
+      driverEyeAnim: phase==='alarm'?'shake .5s ease-in-out infinite':isSoft?'eyepulse 1.3s ease-in-out infinite':phase==='lost'?'eyepulse 1.6s ease-in-out infinite':'eyepulse 4.6s ease-in-out infinite',
+      driverStatusWord: phase==='alarm'?'Alert':isSoft?'Caution':phase==='lost'?'Reconnecting':phase==='idle'?'Standby':'Focused',
+      driverChipBg: phase==='alarm'?'rgba(255,85,69,.16)':isSoft?'rgba(245,166,35,.16)':phase==='lost'?'rgba(138,160,200,.16)':phase==='idle'?'rgba(111,134,173,.14)':'rgba(53,214,164,.14)',
+      driverStatusSub: phase==='alarm'? distType+' \u00b7 '+distractionSecs+'s \u2014 pull over'
+        : isSoft ? distType+' \u00b7 '+distractionSecs+'s'
+        : phase==='lost' ? 'Signal lost \u2014 trying to reconnect\u2026'
+        : phase==='idle' ? 'Waiting for rider to connect'
+        : 'Focused on the road',
+      driverBadgeIcon: this.makeStateIcon(phase, driverColor),
+      driverMonitorText: phase==='lost'?'Paused':phase==='idle'?'Standby':'Active',
+      driverMonitorColor: phase==='lost'?'#F5A623':phase==='idle'?'#6f86ad':'#35D6A4',
+      driverAmbient: phase==='alarm'?'linear-gradient(180deg,#4a1109 0%,#1a0708 55%,#0a0406 100%)':isSoft?'linear-gradient(180deg,#2e2109 0%,#0a1120 55%,#050b18 100%)':phase==='lost'?'linear-gradient(180deg,#141b2c 0%,#0a0f1c 55%,#060a14 100%)':'linear-gradient(180deg,#071a3a 0%,#03102a 55%,#030c22 100%)',
+      // audio + settings
+      audioIcon: this.makeAudioIcon(muted, muted?'#6f86ad':'#F5A623'),
+      audioColor: muted?'#6f86ad':'#F5A623',
+      audioLabel: muted?'Muted':'Sound on',
+      muteLabel: muted?'Unmute':'Mute',
+      showSettings,
+      softAfter: settings.softAfter,
+      alarmAfter: settings.alarmAfter,
+      volPct: Math.round(settings.volume*100)+'%',
+      volPct100: Math.round(settings.volume*100),
+      // rider strip + ticker
+      riderScoreText: active?meterPct+'%':'\u2014',
+      riderScoreColor: liveColor,
+      riderChips: chips,
+      hasChips: chips.length>0,
+      noChips: active && chips.length===0,
+      softBannerText: 'Daniel '+distPast+' \u00b7 '+distractionSecs+'s',
+      alarmTypeText: distType+' \u00b7 '+distractionSecs+'s',
+      // ride status ring
+      rideBg: isSoft ? 'linear-gradient(180deg,#2a1e08,#03102a 40%)' : 'linear-gradient(180deg,#071a3a,#03102a 50%)',
+      statusColor: isSoft ? '#F5A623' : '#35D6A4',
+      statusLabel: isSoft ? 'Caution' : 'All clear',
+      statusSub: isSoft ? 'Distracted for '+distractionSecs+'s \u2014 watching' : 'Driver is focused on the road',
+      statusRingSoft: isSoft ? 'rgba(245,166,35,.4)' : 'rgba(53,214,164,.32)',
+      statusInner: isSoft ? 'radial-gradient(circle at 50% 40%,#3a2c0d,#1a1405)' : 'radial-gradient(circle at 50% 40%,#0d3a2c,#052018)',
+      statusGlow: isSoft ? 'rgba(245,166,35,.22)' : 'rgba(53,214,164,.2)',
+      // summary
+      totalEvents: total,
+      laCount: la, ecCount: ec,
+      laPct: total? Math.round(la/Math.max(la,ec,1)*100)+'%' : '0%',
+      ecPct: total? Math.round(ec/Math.max(la,ec,1)*100)+'%' : '0%',
+      scoreColor, scoreLabel, scoreNote,
+      scoreGauge: this.makeGauge(score, scoreColor),
+      timelineEvents,
+      // panel
+      stepLabel: (stepMap[phase]||['\u2014','#fff'])[0],
+      stepColor: (stepMap[phase]||['\u2014','#fff'])[1],
+      autoLabel: auto ? '\u25A0 Stop demo' : '\u25B6 Auto-play demo',
+      autoBg: auto ? 'rgba(255,59,48,.14)' : 'rgba(245,166,35,.14)',
+      autoBorder: auto ? 'rgba(255,59,48,.4)' : 'rgba(245,166,35,.4)',
+      autoText: auto ? '#FF7A70' : '#F5A623',
+      // handlers
+      connect: ()=>this.connect(),
+      startLookAway: ()=>this.startLookAway(),
+      startEyesClosed: ()=>this.startEyesClosed(),
+      refocus: ()=>this.refocus(),
+      askEnd: ()=>this.askEnd(),
+      cancelEnd: ()=>this.cancelEnd(),
+      confirmEnd: ()=>this.confirmEnd(),
+      viewSummary: ()=>this.viewSummary(),
+      reset: ()=>this.reset(),
+      toggleAuto: ()=>this.toggleAuto(),
+      fireLost: ()=>this.fireLost(),
+      toggleMute: ()=>this.toggleMute(),
+      toggleSettings: ()=>this.toggleSettings(),
+      setSoft: (e)=>this.setSoft(e),
+      setAlarm: (e)=>this.setAlarm(e),
+      setVol: (e)=>this.setVol(e),
+      stop: (e)=>this.stop(e),
+    };
+  }
+}
+
+</script>
+</body>
+</html>
