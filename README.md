@@ -1,22 +1,91 @@
-# CODING AGENTS: READ THIS FIRST
+# OnRoad — Driver Monitoring
 
-This is a **handoff bundle** from Claude Design (claude.ai/design).
+Real-time driver distraction monitoring: a Driver Dashboard runs on the
+driver's phone doing on-device computer-vision detection, and a paired Rider
+Dashboard on a second device gets live status and escalating alerts over a
+Node/Express/Socket.io backend.
 
-A user mocked up designs in HTML/CSS/JS using an AI design tool, then exported this bundle so a coding agent can implement the designs for real.
+The visual design started as a [Claude Design](https://claude.ai/design)
+prototype — the original bundle (HTML/CSS/JS mockup + reference screenshots)
+is kept in `design-reference/` for provenance. Everything in `client/` and
+`server/` is the real implementation.
 
-## What you should do — IMPORTANT
+## Structure
 
-**Read `onroad-driver-monitoring-prototype/project/OnRoad Prototype.dc.html` in full.** The user had this file open when they triggered the handoff, so it's almost certainly the primary design they want built. Read it top to bottom — don't skim. Then **follow its imports**: open every file it pulls in (shared components, CSS, scripts) so you understand how the pieces fit together before you start implementing.
+```
+client/   React + Vite frontend (driver + rider dashboards)
+server/   Node + Express + Socket.io backend (ride state, timers, events)
+design-reference/   Original Claude Design handoff bundle (not part of the app)
+```
 
-**If anything is ambiguous, ask the user to confirm before you start implementing.** It's much cheaper to clarify scope up front than to build the wrong thing.
+## Running locally
 
-## About the design files
+```bash
+# terminal 1
+cd server
+npm install
+npm run dev          # listens on :4000
 
-The design medium is **HTML/CSS/JS** — these are prototypes, not production code. Your job is to **recreate them pixel-perfectly** in whatever technology makes sense for the target codebase (React, Vue, native, whatever fits). Match the visual output; don't copy the prototype's internal structure unless it happens to fit.
+# terminal 2
+cd client
+npm install
+npm run dev           # http://localhost:5173
+```
 
-**Don't render these files in a browser or take screenshots unless the user asks you to.** Everything you need — dimensions, colors, layout rules — is spelled out in the source. Read the HTML and CSS directly; a screenshot won't tell you anything they don't.
+Both default to `localhost:4000` / `localhost:5173` via `.env.example` in
+each folder — copy to `.env` and adjust `CLIENT_ORIGIN` / `VITE_SERVER_URL` /
+`VITE_API_URL` for a real deployment (driver and rider are meant to run on
+two different physical devices, so in practice you'll deploy the server
+somewhere reachable from both).
 
-## Bundle contents
+To try it with two devices/tabs: open `/driver` on one, start a ride, then
+open `/rider` (or scan the QR code, which links straight to `/rider/<code>`)
+on the other and enter the code.
 
-- `onroad-driver-monitoring-prototype/README.md` — this file
-- `onroad-driver-monitoring-prototype/project/` — the `OnRoad Driver Monitoring Prototype` project files (HTML prototypes, assets, components)
+## How the pieces fit together
+
+- **Detection** (`client/src/lib/faceMonitor.js`) runs entirely on the
+  driver's device using MediaPipe Face Landmarker, loaded from CDN at
+  runtime (not bundled). It tracks head yaw/pitch (look-away) and a rolling
+  1s window of blendshape-derived eye openness (eyes-closed), each requiring
+  ~0.8–1s of continuous signal before counting as a real event. No video is
+  ever sent anywhere — only `distraction-start` / `distraction-end` socket
+  events.
+- **Speed gating** (`client/src/lib/speed.js`) uses Geolocation (preferred)
+  with a coarse DeviceMotion-based fallback, and only lets detection run
+  above ~5 mph.
+- **Server** (`server/src/rideStore.js`) is the source of truth for ride
+  state: it owns the elapsed-time clock, the escalation timers (soft alert
+  at 5s, alarm at 15s, alarm sound auto-stop at 60s), and the event log, and
+  broadcasts state to both devices over a Socket.io room keyed by the ride
+  code. State is in-memory and lives for the process lifetime — fine for a
+  single ride session, not meant to survive a server restart.
+- **Summary** is computed server-side from the real logged events when the
+  rider ends the ride (`rideStore.summarize`), including capturing whatever
+  distraction was still in progress at that moment.
+
+## Where this diverges from the prototype
+
+The prototype was a single-tab demo (one shared component driving two phone
+mockups side by side, with a manual control panel to fake every state). A
+few things had to be designed rather than copied because the prototype
+never needed them for two real, independently-connected devices:
+
+- **No phone bezel/status-bar chrome in production** — the prototype's
+  `IOSDevice` frame was presentational packaging for the desktop demo; a
+  real phone browser supplies its own chrome, so only the inner screen
+  content was ported.
+- **Added a role-select entry screen** (`/`) and simple name-entry fields —
+  the prototype had neither, since it never needed real navigation between
+  two separate devices.
+- **Dropped the demo control panel** (Start ride / Auto-play / manual
+  distraction triggers / settings sliders) entirely — that was explicitly
+  the prototype's own testing harness, not product UI.
+- **Dropped the fake continuous "attention %" meter** — per your call, the
+  app is driven purely by real binary distraction state (focused /
+  soft-alert / alarm / paused), not a simulated score.
+- **QR code is real and scannable** (encodes a `/rider/<code>` join URL),
+  replacing the prototype's decorative fake QR pattern.
+- **`onroad-logo.png` doesn't exist in the handoff bundle** — the app mark
+  (`client/src/components/Logo.jsx`) is recreated from the wheel/eye motif
+  in the bundle's own thumbnail template rather than invented from scratch.
