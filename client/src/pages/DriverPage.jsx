@@ -3,7 +3,7 @@ import { QRCodeSVG } from "qrcode.react";
 import Screen from "../components/Screen";
 import Button from "../components/Button";
 import Logo from "../components/Logo";
-import { EyeOffIcon, AlertTriangleIcon, CheckIcon } from "../components/Icons";
+import { EyeOffIcon, AlertTriangleIcon, CheckIcon, ClockIcon } from "../components/Icons";
 import { getSocket } from "../lib/socket";
 import { createRide } from "../lib/api";
 import { fmtTime, colors } from "../lib/theme";
@@ -184,10 +184,10 @@ function MonitoringScreen({ ride, code, speedOk, modelReady, videoRef }) {
   const phase = !speedOk ? "paused" : distraction ? (secs >= ALARM_SEC ? "alarm" : secs >= SOFT_ALERT_SEC ? "soft" : "calm") : "calm";
 
   const palette = {
-    calm: { ring: "rgba(53,214,164,.3)", bg: "radial-gradient(circle at 50% 40%,#0d2c56,#071a3a)", color: colors.green, chip: "rgba(53,214,164,.14)", word: "Focused", sub: "Focused on the road" },
-    paused: { ring: "rgba(138,160,200,.35)", bg: "radial-gradient(circle at 50% 40%,#1a2438,#0c1220)", color: "#8aa0c8", chip: "rgba(138,160,200,.16)", word: "Standby", sub: "Vehicle stopped — monitoring paused" },
-    soft: { ring: "rgba(245,166,35,.45)", bg: "radial-gradient(circle at 50% 40%,#3a2c0d,#1a1405)", color: colors.orange, chip: "rgba(245,166,35,.16)", word: "Caution", sub: `${distraction?.type === "eyes_closed" ? "Eyes closed" : "Looking away"} · ${secs}s` },
-    alarm: { ring: "rgba(255,85,69,.45)", bg: "radial-gradient(circle at 50% 40%,#5e1512,#2a0906)", color: colors.red, chip: "rgba(255,85,69,.16)", word: "Alert", sub: `${distraction?.type === "eyes_closed" ? "Eyes closed" : "Looking away"} · ${secs}s — pull over` },
+    calm: { ring: "rgba(53,214,164,.3)", bg: "radial-gradient(circle at 50% 40%,#0d2c56,#071a3a)", color: colors.green, chip: "rgba(53,214,164,.14)", word: "Focused", sub: "Focused on the road", icon: (color) => <CheckIcon size={16} color={color} strokeWidth={2.6} /> },
+    paused: { ring: "rgba(138,160,200,.35)", bg: "radial-gradient(circle at 50% 40%,#1a2438,#0c1220)", color: "#8aa0c8", chip: "rgba(138,160,200,.16)", word: "Standby", sub: "Vehicle stopped — monitoring paused", icon: (color) => <ClockIcon size={16} color={color} strokeWidth={2.2} /> },
+    soft: { ring: "rgba(245,166,35,.45)", bg: "radial-gradient(circle at 50% 40%,#3a2c0d,#1a1405)", color: colors.orange, chip: "rgba(245,166,35,.16)", word: "Caution", sub: `${distraction?.type === "eyes_closed" ? "Eyes closed" : "Looking away"} · ${secs}s`, icon: (color) => <EyeOffIcon size={16} color={color} strokeWidth={2.2} /> },
+    alarm: { ring: "rgba(255,85,69,.45)", bg: "radial-gradient(circle at 50% 40%,#5e1512,#2a0906)", color: colors.red, chip: "rgba(255,85,69,.16)", word: "Alert", sub: `${distraction?.type === "eyes_closed" ? "Eyes closed" : "Looking away"} · ${secs}s — pull over`, icon: (color) => <AlertTriangleIcon size={16} color={color} strokeWidth={2.4} /> },
   }[phase];
 
   const ambient = {
@@ -231,6 +231,7 @@ function MonitoringScreen({ ride, code, speedOk, modelReady, videoRef }) {
         </div>
         <div style={{ textAlign: "center" }}>
           <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "7px 16px", borderRadius: 999, background: palette.chip }}>
+            {palette.icon(palette.color)}
             <span style={{ fontSize: 19, fontWeight: 700, color: palette.color }}>{palette.word}</span>
           </div>
           <div style={{ fontSize: 13, color: colors.textMuted, marginTop: 10, lineHeight: 1.45 }}>
