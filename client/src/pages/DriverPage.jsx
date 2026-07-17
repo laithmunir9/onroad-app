@@ -193,10 +193,10 @@ const inputStyle = {
   outline: "none",
 };
 
-function MonitoringScreen({ ride, code, speedOk, modelReady, videoRef, devSkipSpeedGate, onToggleDevSkipSpeedGate }) {
+function MonitoringScreen({ ride, code, speedOk: effectiveSpeedOk, modelReady, videoRef, devSkipSpeedGate, onToggleDevSkipSpeedGate }) {
   const distraction = ride?.distraction || null;
   const secs = distraction?.secs ?? 0;
-  const phase = !speedOk ? "paused" : distraction ? (secs >= ALARM_SEC ? "alarm" : secs >= SOFT_ALERT_SEC ? "soft" : "calm") : "calm";
+  const phase = !effectiveSpeedOk ? "paused" : distraction ? (secs >= ALARM_SEC ? "alarm" : secs >= SOFT_ALERT_SEC ? "soft" : "calm") : "calm";
 
   const palette = {
     calm: { ring: "rgba(53,214,164,.3)", bg: "radial-gradient(circle at 50% 40%,#0d2c56,#071a3a)", color: colors.green, chip: "rgba(53,214,164,.14)", word: "Focused", sub: "Focused on the road", icon: (color) => <CheckIcon size={16} color={color} strokeWidth={2.6} /> },
@@ -277,8 +277,8 @@ function MonitoringScreen({ ride, code, speedOk, modelReady, videoRef, devSkipSp
             label="Monitoring"
             value={
               <span style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                <span style={{ width: 9, height: 9, borderRadius: "50%", background: speedOk ? colors.green : colors.orange }} />
-                {speedOk ? "Active" : "Paused"}
+                <span style={{ width: 9, height: 9, borderRadius: "50%", background: effectiveSpeedOk ? colors.green : colors.orange }} />
+                {effectiveSpeedOk ? "Active" : "Paused"}
               </span>
             }
           />
