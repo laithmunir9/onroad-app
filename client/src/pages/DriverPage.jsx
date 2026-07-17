@@ -19,6 +19,9 @@ export default function DriverPage() {
   const [ride, setRide] = useState(null); // live state snapshot from server
   const [speedOk, setSpeedOk] = useState(true);
   const [modelReady, setModelReady] = useState(false);
+  const [devSkipSpeedGate, setDevSkipSpeedGate] = useState(
+    () => import.meta.env.DEV && new URLSearchParams(window.location.search).get("devSkipSpeedGate") === "1"
+  );
 
   const videoRef = useRef(null);
   const socketRef = useRef(null);
@@ -28,9 +31,11 @@ export default function DriverPage() {
   const codeRef = useRef(null);
   const speedOkRef = useRef(true);
 
+  const effectiveSpeedOk = speedOk || devSkipSpeedGate;
+
   useEffect(() => {
-    speedOkRef.current = speedOk;
-  }, [speedOk]);
+    speedOkRef.current = effectiveSpeedOk;
+  }, [effectiveSpeedOk]);
 
   const teardown = useCallback(() => {
     monitorRef.current?.stop();
@@ -163,7 +168,17 @@ export default function DriverPage() {
     );
   }
 
-  return <MonitoringScreen ride={ride} code={codeRef.current} speedOk={speedOk} modelReady={modelReady} videoRef={videoRef} />;
+  return (
+    <MonitoringScreen
+      ride={ride}
+      code={codeRef.current}
+      speedOk={effectiveSpeedOk}
+      modelReady={modelReady}
+      videoRef={videoRef}
+      devSkipSpeedGate={devSkipSpeedGate}
+      onToggleDevSkipSpeedGate={import.meta.env.DEV ? () => setDevSkipSpeedGate((v) => !v) : undefined}
+    />
+  );
 }
 
 const inputStyle = {
@@ -178,7 +193,7 @@ const inputStyle = {
   outline: "none",
 };
 
-function MonitoringScreen({ ride, code, speedOk, modelReady, videoRef }) {
+function MonitoringScreen({ ride, code, speedOk, modelReady, videoRef, devSkipSpeedGate, onToggleDevSkipSpeedGate }) {
   const distraction = ride?.distraction || null;
   const secs = distraction?.secs ?? 0;
   const phase = !speedOk ? "paused" : distraction ? (secs >= ALARM_SEC ? "alarm" : secs >= SOFT_ALERT_SEC ? "soft" : "calm") : "calm";
@@ -203,11 +218,29 @@ function MonitoringScreen({ ride, code, speedOk, modelReady, videoRef }) {
     <Screen background={ambient} style={{ transition: "background .8s ease" }}>
       <video ref={videoRef} muted playsInline style={{ position: "absolute", width: 1, height: 1, opacity: 0, pointerEvents: "none" }} />
 
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
           <Logo size={30} radius={8} />
           <span style={{ fontSize: 15, fontWeight: 700 }}>OnRoad</span>
         </div>
+        {onToggleDevSkipSpeedGate && (
+          <button
+            onClick={onToggleDevSkipSpeedGate}
+            style={{
+              fontSize: 10.5,
+              fontWeight: 700,
+              letterSpacing: ".04em",
+              color: devSkipSpeedGate ? "#04122b" : "#FFC303",
+              background: devSkipSpeedGate ? "#FFC303" : "rgba(245,166,35,.14)",
+              border: "1px solid rgba(245,166,35,.5)",
+              borderRadius: 999,
+              padding: "5px 10px",
+              cursor: "pointer",
+            }}
+          >
+            {devSkipSpeedGate ? "DEV: SPEED GATE BYPASSED" : "DEV: BYPASS SPEED GATE"}
+          </button>
+        )}
         <span style={{ fontSize: 11, fontWeight: 600, color: colors.textDim, letterSpacing: ".13em", textTransform: "uppercase" }}>Driver</span>
       </div>
 
