@@ -3,7 +3,9 @@ import { QRCodeSVG } from "qrcode.react";
 import Screen from "../components/Screen";
 import Button from "../components/Button";
 import Logo from "../components/Logo";
-import { EyeOffIcon, AlertTriangleIcon, CheckIcon, ClockIcon } from "../components/Icons";
+import BackButton from "../components/BackButton";
+import EndRideSheet from "../components/EndRideSheet";
+import { EyeOffIcon, AlertTriangleIcon, CheckIcon, ClockIcon, StopSquareIcon } from "../components/Icons";
 import { getSocket } from "../lib/socket";
 import { createRide } from "../lib/api";
 import { fmtTime, colors } from "../lib/theme";
@@ -22,6 +24,7 @@ export default function DriverPage() {
   const [devSkipSpeedGate, setDevSkipSpeedGate] = useState(
     () => import.meta.env.DEV && new URLSearchParams(window.location.search).get("devSkipSpeedGate") === "1"
   );
+  const [showEnd, setShowEnd] = useState(false);
 
   const videoRef = useRef(null);
   const socketRef = useRef(null);
@@ -51,6 +54,7 @@ export default function DriverPage() {
   async function handleStartRide(e) {
     e.preventDefault();
     setErrorMsg("");
+    setRide(null);
     setStep("starting");
     try {
       const { code } = await createRide({ driverName: driverName.trim() || "Driver", carLabel: carLabel.trim() });
@@ -71,6 +75,10 @@ export default function DriverPage() {
         });
       });
 
+      // A driver can now end a ride and start a fresh one without reloading
+      // the page (see confirmEndRide) — drop any listener from a prior ride
+      // on this same socket before attaching a new one.
+      socket.off("ride:state");
       socket.on("ride:state", (state) => setRide(state));
 
       videoRef.current.srcObject = stream;
@@ -105,10 +113,26 @@ export default function DriverPage() {
     return () => socket.off("ride:ended", onEnded);
   }, [teardown]);
 
+  function askEndRide() {
+    setShowEnd(true);
+  }
+
+  function cancelEndRide() {
+    setShowEnd(false);
+  }
+
+  function confirmEndRide() {
+    socketRef.current?.emit("driver:end-ride");
+    teardown();
+    setShowEnd(false);
+    setStep("setup");
+  }
+
   if (step === "setup" || step === "starting" || step === "error") {
     return (
       <Screen background="radial-gradient(120% 80% at 50% -10%,#0a1f45 0%,#030c22 60%)">
-        <div style={{ display: "flex", alignItems: "center", gap: 9, marginBottom: 30 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 30 }}>
+          <BackButton />
           <Logo size={30} radius={8} />
           <span style={{ fontSize: 15, fontWeight: 700 }}>OnRoad</span>
         </div>
@@ -177,6 +201,10 @@ export default function DriverPage() {
       videoRef={videoRef}
       devSkipSpeedGate={devSkipSpeedGate}
       onToggleDevSkipSpeedGate={import.meta.env.DEV ? () => setDevSkipSpeedGate((v) => !v) : undefined}
+      showEnd={showEnd}
+      onAskEnd={askEndRide}
+      onCancelEnd={cancelEndRide}
+      onConfirmEnd={confirmEndRide}
     />
   );
 }
@@ -193,7 +221,19 @@ const inputStyle = {
   outline: "none",
 };
 
-function MonitoringScreen({ ride, code, speedOk: effectiveSpeedOk, modelReady, videoRef, devSkipSpeedGate, onToggleDevSkipSpeedGate }) {
+function MonitoringScreen({
+  ride,
+  code,
+  speedOk: effectiveSpeedOk,
+  modelReady,
+  videoRef,
+  devSkipSpeedGate,
+  onToggleDevSkipSpeedGate,
+  showEnd,
+  onAskEnd,
+  onCancelEnd,
+  onConfirmEnd,
+}) {
   const distraction = ride?.distraction || null;
   const secs = distraction?.secs ?? 0;
   const phase = !effectiveSpeedOk ? "paused" : distraction ? (secs >= ALARM_SEC ? "alarm" : secs >= SOFT_ALERT_SEC ? "soft" : "calm") : "calm";
@@ -218,30 +258,51 @@ function MonitoringScreen({ ride, code, speedOk: effectiveSpeedOk, modelReady, v
     <Screen background={ambient} style={{ transition: "background .8s ease" }}>
       <video ref={videoRef} muted playsInline style={{ position: "absolute", width: 1, height: 1, opacity: 0, pointerEvents: "none" }} />
 
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
           <Logo size={30} radius={8} />
           <span style={{ fontSize: 15, fontWeight: 700 }}>OnRoad</span>
         </div>
-        {onToggleDevSkipSpeedGate && (
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          {onToggleDevSkipSpeedGate && (
+            <button
+              onClick={onToggleDevSkipSpeedGate}
+              style={{
+                fontSize: 10.5,
+                fontWeight: 700,
+                letterSpacing: ".04em",
+                color: devSkipSpeedGate ? "#04122b" : "#FFC303",
+                background: devSkipSpeedGate ? "#FFC303" : "rgba(245,166,35,.14)",
+                border: "1px solid rgba(245,166,35,.5)",
+                borderRadius: 999,
+                padding: "5px 10px",
+                cursor: "pointer",
+              }}
+            >
+              {devSkipSpeedGate ? "DEV: SPEED GATE BYPASSED" : "DEV: BYPASS SPEED GATE"}
+            </button>
+          )}
+          <span style={{ fontSize: 11, fontWeight: 600, color: colors.textDim, letterSpacing: ".13em", textTransform: "uppercase" }}>Driver</span>
           <button
-            onClick={onToggleDevSkipSpeedGate}
+            onClick={onAskEnd}
+            aria-label="End ride"
             style={{
-              fontSize: 10.5,
-              fontWeight: 700,
-              letterSpacing: ".04em",
-              color: devSkipSpeedGate ? "#04122b" : "#FFC303",
-              background: devSkipSpeedGate ? "#FFC303" : "rgba(245,166,35,.14)",
-              border: "1px solid rgba(245,166,35,.5)",
-              borderRadius: 999,
-              padding: "5px 10px",
+              width: 32,
+              height: 32,
+              borderRadius: 12,
+              background: "rgba(255,255,255,.05)",
+              border: "1px solid rgba(255,255,255,.12)",
+              color: "#a9bdde",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
               cursor: "pointer",
+              flex: "none",
             }}
           >
-            {devSkipSpeedGate ? "DEV: SPEED GATE BYPASSED" : "DEV: BYPASS SPEED GATE"}
+            <StopSquareIcon size={15} />
           </button>
-        )}
-        <span style={{ fontSize: 11, fontWeight: 600, color: colors.textDim, letterSpacing: ".13em", textTransform: "uppercase" }}>Driver</span>
+        </div>
       </div>
 
       <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 26 }}>
@@ -328,6 +389,22 @@ function MonitoringScreen({ ride, code, speedOk: effectiveSpeedOk, modelReady, v
           <div style={{ fontSize: 20, fontWeight: 700 }}>Ride ended</div>
           <div style={{ fontSize: 13, color: colors.textMuted }}>Your rider ended the ride and can see the safety summary.</div>
         </div>
+      )}
+
+      {showEnd && (
+        <EndRideSheet
+          onCancel={onCancelEnd}
+          onConfirm={onConfirmEnd}
+          description={
+            <>
+              Monitoring will stop and your rider
+              <br />
+              will get a safety summary for the trip.
+            </>
+          }
+          confirmLabel="End Ride"
+          cancelLabel="Keep monitoring"
+        />
       )}
     </Screen>
   );

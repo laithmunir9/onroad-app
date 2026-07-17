@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 import Screen from "../components/Screen";
 import Button from "../components/Button";
 import Logo from "../components/Logo";
+import BackButton from "../components/BackButton";
+import EndRideSheet from "../components/EndRideSheet";
 import { EyeOffIcon, AlertTriangleIcon, CheckIcon, WifiOffIcon, StopSquareIcon } from "../components/Icons";
 import { getSocket } from "../lib/socket";
 import { fetchSummary } from "../lib/api";
@@ -179,7 +181,8 @@ function ConnectScreen({ initialCode, audio, onConnected }) {
 
   return (
     <Screen>
-      <div style={{ display: "flex", alignItems: "center", gap: 9, marginBottom: "auto" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: "auto" }}>
+        <BackButton />
         <Logo size={30} radius={8} />
         <span style={{ fontSize: 15, fontWeight: 700 }}>OnRoad</span>
       </div>
@@ -474,36 +477,6 @@ function LostScreen({ ride, onAskEnd, showEnd, onCancelEnd, onConfirmEnd }) {
       </Button>
       {showEnd && <EndRideSheet onCancel={onCancelEnd} onConfirm={onConfirmEnd} />}
     </Screen>
-  );
-}
-
-function EndRideSheet({ onCancel, onConfirm }) {
-  return (
-    <div
-      onClick={onCancel}
-      style={{ position: "fixed", inset: 0, zIndex: 80, background: "rgba(3,10,25,.72)", animation: "fadeIn .2s ease", display: "flex", flexDirection: "column", justifyContent: "flex-end" }}
-    >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        style={{ background: "#0c1e40", borderTop: "1px solid rgba(255,255,255,.1)", borderRadius: "28px 26px 0 0", padding: "28px 24px 40px", animation: "sheetUp .28s cubic-bezier(.2,.8,.2,1)" }}
-      >
-        <div style={{ width: 40, height: 4, borderRadius: 2, background: "rgba(255,255,255,.2)", margin: "0 auto 22px" }} />
-        <div style={{ fontSize: 21, fontWeight: 700, textAlign: "center" }}>End this ride?</div>
-        <div style={{ fontSize: 14, color: colors.textMuted, textAlign: "center", margin: "9px 0 26px", lineHeight: 1.5 }}>
-          Monitoring will stop and you'll get a
-          <br />
-          safety summary for the trip.
-        </div>
-        <div style={{ marginBottom: 11 }}>
-          <Button variant="danger" onClick={onConfirm}>
-            End Ride &amp; view summary
-          </Button>
-        </div>
-        <Button variant="ghost" onClick={onCancel} height={52}>
-          Keep watching
-        </Button>
-      </div>
-    </div>
   );
 }
 

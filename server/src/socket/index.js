@@ -70,6 +70,11 @@ export function registerSocketHandlers(io) {
       endRide(socket.data.code);
     });
 
+    socket.on("driver:end-ride", () => {
+      if (socket.data.role !== "driver" || !socket.data.code) return;
+      endRide(socket.data.code);
+    });
+
     socket.on("disconnect", () => {
       handleDisconnect(socket.id);
     });
