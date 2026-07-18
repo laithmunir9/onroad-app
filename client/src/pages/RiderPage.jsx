@@ -64,6 +64,9 @@ export default function RiderPage() {
   const handleConnected = useCallback((state) => {
     setRide(state);
     setConnected(true);
+    if (typeof Notification !== "undefined" && Notification.permission === "default") {
+      Notification.requestPermission().catch(() => {});
+    }
     if (state.status === "ended") {
       fetchSummary(state.code).then(setSummary).catch(() => {});
     }
@@ -129,12 +132,6 @@ function ConnectScreen({ initialCode, audio, onConnected }) {
   const [error, setError] = useState("");
   const [connecting, setConnecting] = useState(false);
   const inputsRef = useRef([]);
-
-  useEffect(() => {
-    if (typeof Notification !== "undefined" && Notification.permission === "default") {
-      Notification.requestPermission().catch(() => {});
-    }
-  }, []);
 
   function setChar(i, val) {
     const v = val.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(-1);

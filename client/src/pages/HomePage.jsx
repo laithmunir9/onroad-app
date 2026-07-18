@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import Logo from "../components/Logo";
-import Button from "../components/Button";
 import { CarIcon, EyeOffIcon } from "../components/Icons";
 
 export default function HomePage() {
@@ -10,7 +9,6 @@ export default function HomePage() {
       style={{
         position: "relative",
         overflow: "hidden",
-        minHeight: "100vh",
         minHeight: "100dvh",
         display: "flex",
         flexDirection: "column",

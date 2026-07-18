@@ -76,10 +76,15 @@ export default function DriverPage() {
       });
 
       // A driver can now end a ride and start a fresh one without reloading
-      // the page (see confirmEndRide) — drop any listener from a prior ride
-      // on this same socket before attaching a new one.
+      // the page — drop any listener from a prior ride on this same socket
+      // before attaching a new one.
       socket.off("ride:state");
       socket.on("ride:state", (state) => setRide(state));
+      socket.off("ride:ended");
+      socket.on("ride:ended", () => {
+        teardown();
+        setStep("setup");
+      });
 
       videoRef.current.srcObject = stream;
       await videoRef.current.play().catch(() => {});
@@ -104,14 +109,6 @@ export default function DriverPage() {
       setStep("error");
     }
   }
-
-  useEffect(() => {
-    const socket = socketRef.current;
-    if (!socket) return;
-    const onEnded = () => teardown();
-    socket.on("ride:ended", onEnded);
-    return () => socket.off("ride:ended", onEnded);
-  }, [teardown]);
 
   function askEndRide() {
     setShowEnd(true);
@@ -380,14 +377,6 @@ function MonitoringScreen({
             <div style={{ fontSize: 12, color: "#8fb9a9" }}>{ride.riderName || "Your rider"} is following this ride · {fmtTime(ride.elapsed)}</div>
           </div>
           <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: colors.textDim }}>{code}</span>
-        </div>
-      )}
-
-      {ride?.status === "ended" && (
-        <div style={{ position: "absolute", inset: 0, background: "rgba(3,10,25,.85)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10, padding: 24, textAlign: "center" }}>
-          <CheckIcon size={40} />
-          <div style={{ fontSize: 20, fontWeight: 700 }}>Ride ended</div>
-          <div style={{ fontSize: 13, color: colors.textMuted }}>Your rider ended the ride and can see the safety summary.</div>
         </div>
       )}
 
