@@ -5,7 +5,8 @@ import Button from "../components/Button";
 import Logo from "../components/Logo";
 import BackButton from "../components/BackButton";
 import EndRideSheet from "../components/EndRideSheet";
-import { EyeOffIcon, AlertTriangleIcon, CheckIcon, WifiOffIcon, StopSquareIcon } from "../components/Icons";
+import QrScanner from "../components/QrScanner";
+import { EyeOffIcon, AlertTriangleIcon, CheckIcon, WifiOffIcon, StopSquareIcon, ArrowRightIcon, QRScanIcon } from "../components/Icons";
 import { getSocket } from "../lib/socket";
 import { fetchSummary } from "../lib/api";
 import { fmtTime, colors } from "../lib/theme";
@@ -131,6 +132,7 @@ function ConnectScreen({ initialCode, audio, onConnected }) {
   });
   const [error, setError] = useState("");
   const [connecting, setConnecting] = useState(false);
+  const [scanning, setScanning] = useState(false);
   const inputsRef = useRef([]);
 
   function setChar(i, val) {
@@ -149,9 +151,7 @@ function ConnectScreen({ initialCode, audio, onConnected }) {
     }
   }
 
-  async function connect(e) {
-    e.preventDefault();
-    const code = chars.join("");
+  async function connectWithCode(code) {
     if (code.length < 6) {
       setError("Enter the full 6-character ride code.");
       return;
@@ -174,6 +174,23 @@ function ConnectScreen({ initialCode, audio, onConnected }) {
     } finally {
       setConnecting(false);
     }
+  }
+
+  function connect(e) {
+    e.preventDefault();
+    connectWithCode(chars.join(""));
+  }
+
+  function handleScanDecode(text) {
+    setScanning(false);
+    const raw = text.split("/").filter(Boolean).pop() || text;
+    const code = raw.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6);
+    if (code.length < 6) {
+      setError("Couldn't read a valid ride code from that QR code.");
+      return;
+    }
+    setChars(code.split(""));
+    connectWithCode(code);
   }
 
   return (
@@ -243,9 +260,22 @@ function ConnectScreen({ initialCode, audio, onConnected }) {
           </div>
         )}
         <Button type="submit" disabled={connecting}>
-          {connecting ? "Connecting…" : "Connect to ride"}
+          {connecting ? (
+            "Connecting…"
+          ) : (
+            <>
+              Connect to ride
+              <ArrowRightIcon size={20} />
+            </>
+          )}
+        </Button>
+        <Button type="button" variant="ghost" onClick={() => setScanning(true)} disabled={connecting} height={48}>
+          <QRScanIcon size={18} />
+          Scan QR instead
         </Button>
       </form>
+
+      {scanning && <QrScanner onDecode={handleScanDecode} onClose={() => setScanning(false)} />}
     </Screen>
   );
 }
