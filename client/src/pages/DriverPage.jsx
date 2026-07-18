@@ -7,14 +7,18 @@ import BackButton from "../components/BackButton";
 import EndRideSheet from "../components/EndRideSheet";
 import { EyeOffIcon, AlertTriangleIcon, CheckIcon, ClockIcon, StopSquareIcon } from "../components/Icons";
 import { getSocket } from "../lib/socket";
-import { createRide } from "../lib/api";
+import { createRide, fetchRide } from "../lib/api";
 import { fmtTime, colors } from "../lib/theme";
 import { SOFT_ALERT_SEC, ALARM_SEC, SPEED_THRESHOLD_MPH } from "../lib/constants";
 import { FaceMonitor } from "../lib/faceMonitor";
 import { startSpeedTracking, requestMotionPermission } from "../lib/speed";
+import { saveSession, loadSession, clearSession } from "../lib/rideSession";
 
 export default function DriverPage() {
-  const [step, setStep] = useState("setup"); // setup | starting | monitoring | error
+  // checking | resume | setup | monitoring
+  const [step, setStep] = useState(() => (loadSession()?.role === "driver" ? "checking" : "setup"));
+  const [resumeInfo, setResumeInfo] = useState(null);
+  const [busy, setBusy] = useState(false);
   const [driverName, setDriverName] = useState("");
   const [carLabel, setCarLabel] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
@@ -51,13 +55,44 @@ export default function DriverPage() {
 
   useEffect(() => () => teardown(), [teardown]);
 
-  async function handleStartRide(e) {
-    e.preventDefault();
+  // A saved session means the driver was mid-ride before a reload. The ride
+  // itself already survives a disconnect server-side (see rideStore's
+  // handleDisconnect) — confirm it's still live before offering to resume,
+  // since a stale/expired code should just fall through to a normal start.
+  useEffect(() => {
+    if (step !== "checking") return;
+    const session = loadSession();
+    if (!session || session.role !== "driver") {
+      setStep("setup");
+      return;
+    }
+    fetchRide(session.code)
+      .then((state) => {
+        if (state.status === "live") {
+          setResumeInfo(session);
+          setStep("resume");
+        } else {
+          clearSession();
+          setStep("setup");
+        }
+      })
+      .catch(() => {
+        clearSession();
+        setStep("setup");
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function beginMonitoring({ code: existingCode, name, carLabel: label }) {
     setErrorMsg("");
     setRide(null);
-    setStep("starting");
+    setBusy(true);
     try {
-      const { code } = await createRide({ driverName: driverName.trim() || "Driver", carLabel: carLabel.trim() });
+      let code = existingCode;
+      if (!code) {
+        const created = await createRide({ driverName: name, carLabel: label });
+        code = created.code;
+      }
       codeRef.current = code;
 
       // Must be requested inside this click-driven handler for browser permission prompts.
@@ -69,20 +104,24 @@ export default function DriverPage() {
       socketRef.current = socket;
       if (!socket.connected) socket.connect();
       await new Promise((resolve, reject) => {
-        socket.emit("join", { code, role: "driver", name: driverName.trim() || "Driver" }, (res) => {
+        socket.emit("join", { code, role: "driver", name }, (res) => {
           if (res?.ok) resolve(res.state);
           else reject(new Error(res?.error || "Could not start ride"));
         });
       });
 
-      // A driver can now end a ride and start a fresh one without reloading
-      // the page — drop any listener from a prior ride on this same socket
-      // before attaching a new one.
+      saveSession({ role: "driver", code, driverName: name, carLabel: label });
+
+      // A driver can now end a ride and start a fresh one (or resume one)
+      // without reloading the page — drop any listener from a prior ride on
+      // this same socket before attaching a new one.
       socket.off("ride:state");
       socket.on("ride:state", (state) => setRide(state));
       socket.off("ride:ended");
       socket.on("ride:ended", () => {
         teardown();
+        clearSession();
+        setBusy(false);
         setStep("setup");
       });
 
@@ -102,12 +141,30 @@ export default function DriverPage() {
       monitorRef.current = monitor;
       await monitor.start();
       setModelReady(true);
+      setBusy(false);
       setStep("monitoring");
     } catch (err) {
       teardown();
       setErrorMsg(err.message || "Something went wrong starting the ride.");
-      setStep("error");
+      setBusy(false);
     }
+  }
+
+  function handleStartRide(e) {
+    e.preventDefault();
+    beginMonitoring({ code: null, name: driverName.trim() || "Driver", carLabel: carLabel.trim() });
+  }
+
+  function handleResumeRide() {
+    if (!resumeInfo) return;
+    beginMonitoring({ code: resumeInfo.code, name: resumeInfo.driverName, carLabel: resumeInfo.carLabel });
+  }
+
+  function startNewInstead() {
+    clearSession();
+    setResumeInfo(null);
+    setErrorMsg("");
+    setStep("setup");
   }
 
   function askEndRide() {
@@ -121,11 +178,23 @@ export default function DriverPage() {
   function confirmEndRide() {
     socketRef.current?.emit("driver:end-ride");
     teardown();
+    clearSession();
     setShowEnd(false);
     setStep("setup");
   }
 
-  if (step === "setup" || step === "starting" || step === "error") {
+  if (step === "checking") {
+    return (
+      <Screen background="radial-gradient(120% 80% at 50% -10%,#0a1f45 0%,#030c22 60%)">
+        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <span style={{ fontSize: 13.5, color: colors.textMuted }}>Checking for an active ride…</span>
+        </div>
+      </Screen>
+    );
+  }
+
+  if (step === "setup" || step === "resume") {
+    const resuming = step === "resume";
     return (
       <Screen background="radial-gradient(120% 80% at 50% -10%,#0a1f45 0%,#030c22 60%)">
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 30 }}>
@@ -134,55 +203,98 @@ export default function DriverPage() {
           <span style={{ fontSize: 15, fontWeight: 700 }}>OnRoad</span>
         </div>
         <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", gap: 22, maxWidth: 380, margin: "0 auto", width: "100%" }}>
-          <div style={{ textAlign: "center" }}>
-            <div
-              style={{
-                width: 70,
-                height: 70,
-                borderRadius: 24,
-                background: "rgba(53,214,164,.12)",
-                border: "1px solid rgba(53,214,164,.35)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                margin: "0 auto 20px",
-              }}
-            >
-              <EyeOffIcon size={32} color="#35D6A4" />
-            </div>
-            <div style={{ fontSize: 24, fontWeight: 700 }}>Start a ride</div>
-            <div style={{ fontSize: 13.5, color: colors.textMuted, marginTop: 8, lineHeight: 1.5 }}>
-              Your camera watches the road ahead of you — no video ever leaves this device, only distraction events.
-            </div>
-          </div>
-
-          <form onSubmit={handleStartRide} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            <input
-              value={driverName}
-              onChange={(e) => setDriverName(e.target.value)}
-              placeholder="Your name"
-              style={inputStyle}
-              required
-            />
-            <input
-              value={carLabel}
-              onChange={(e) => setCarLabel(e.target.value)}
-              placeholder="Vehicle (optional)"
-              style={inputStyle}
-            />
-            {errorMsg && (
-              <div style={{ display: "flex", gap: 10, alignItems: "flex-start", background: "rgba(255,85,69,.1)", border: "1px solid rgba(255,85,69,.35)", borderRadius: 16, padding: "12px 14px" }}>
-                <AlertTriangleIcon size={18} color="#FF7A70" />
-                <span style={{ fontSize: 12.5, color: "#ffb3ad", lineHeight: 1.4 }}>{errorMsg}</span>
+          {resuming ? (
+            <>
+              <div style={{ textAlign: "center" }}>
+                <div
+                  style={{
+                    width: 70,
+                    height: 70,
+                    borderRadius: 24,
+                    background: "rgba(245,166,35,.12)",
+                    border: "1px solid rgba(245,166,35,.35)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    margin: "0 auto 20px",
+                  }}
+                >
+                  <ClockIcon size={32} color="#F5A623" />
+                </div>
+                <div style={{ fontSize: 24, fontWeight: 700 }}>Resume your ride?</div>
+                <div style={{ fontSize: 13.5, color: colors.textMuted, marginTop: 8, lineHeight: 1.5 }}>
+                  You still have a ride in progress as {resumeInfo?.driverName || "Driver"} · code {resumeInfo?.code}. Your rider may still be watching.
+                </div>
               </div>
-            )}
-            <Button type="submit" disabled={step === "starting"}>
-              {step === "starting" ? "Requesting camera & location…" : "Start monitoring"}
-            </Button>
-            <div style={{ fontSize: 11.5, color: colors.textDim, textAlign: "center", lineHeight: 1.5 }}>
-              Requires camera and location access. Monitoring only runs while the vehicle is moving above {SPEED_THRESHOLD_MPH} mph.
-            </div>
-          </form>
+              {errorMsg && (
+                <div style={{ display: "flex", gap: 10, alignItems: "flex-start", background: "rgba(255,85,69,.1)", border: "1px solid rgba(255,85,69,.35)", borderRadius: 16, padding: "12px 14px" }}>
+                  <AlertTriangleIcon size={18} color="#FF7A70" />
+                  <span style={{ fontSize: 12.5, color: "#ffb3ad", lineHeight: 1.4 }}>{errorMsg}</span>
+                </div>
+              )}
+              <Button onClick={handleResumeRide} disabled={busy}>
+                {busy ? "Requesting camera & location…" : "Resume monitoring"}
+              </Button>
+              <button
+                onClick={startNewInstead}
+                style={{ background: "transparent", border: "none", color: colors.textDim, fontSize: 13, textAlign: "center", cursor: "pointer", textDecoration: "underline", padding: 6 }}
+              >
+                Start a new ride instead
+              </button>
+            </>
+          ) : (
+            <>
+              <div style={{ textAlign: "center" }}>
+                <div
+                  style={{
+                    width: 70,
+                    height: 70,
+                    borderRadius: 24,
+                    background: "rgba(53,214,164,.12)",
+                    border: "1px solid rgba(53,214,164,.35)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    margin: "0 auto 20px",
+                  }}
+                >
+                  <EyeOffIcon size={32} color="#35D6A4" />
+                </div>
+                <div style={{ fontSize: 24, fontWeight: 700 }}>Start a ride</div>
+                <div style={{ fontSize: 13.5, color: colors.textMuted, marginTop: 8, lineHeight: 1.5 }}>
+                  Your camera watches the road ahead of you — no video ever leaves this device, only distraction events.
+                </div>
+              </div>
+
+              <form onSubmit={handleStartRide} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                <input
+                  value={driverName}
+                  onChange={(e) => setDriverName(e.target.value)}
+                  placeholder="Your name"
+                  style={inputStyle}
+                  required
+                />
+                <input
+                  value={carLabel}
+                  onChange={(e) => setCarLabel(e.target.value)}
+                  placeholder="Vehicle (optional)"
+                  style={inputStyle}
+                />
+                {errorMsg && (
+                  <div style={{ display: "flex", gap: 10, alignItems: "flex-start", background: "rgba(255,85,69,.1)", border: "1px solid rgba(255,85,69,.35)", borderRadius: 16, padding: "12px 14px" }}>
+                    <AlertTriangleIcon size={18} color="#FF7A70" />
+                    <span style={{ fontSize: 12.5, color: "#ffb3ad", lineHeight: 1.4 }}>{errorMsg}</span>
+                  </div>
+                )}
+                <Button type="submit" disabled={busy}>
+                  {busy ? "Requesting camera & location…" : "Start monitoring"}
+                </Button>
+                <div style={{ fontSize: 11.5, color: colors.textDim, textAlign: "center", lineHeight: 1.5 }}>
+                  Requires camera and location access. Monitoring only runs while the vehicle is moving above {SPEED_THRESHOLD_MPH} mph.
+                </div>
+              </form>
+            </>
+          )}
         </div>
         <video ref={videoRef} muted playsInline style={{ display: "none" }} />
       </Screen>

@@ -12,6 +12,7 @@ import { fetchSummary } from "../lib/api";
 import { fmtTime, colors } from "../lib/theme";
 import { SOFT_ALERT_SEC, ALARM_SEC } from "../lib/constants";
 import { AlertAudio } from "../lib/audio";
+import { saveSession, loadSession, clearSession } from "../lib/rideSession";
 
 export default function RiderPage() {
   const { code: codeFromUrl } = useParams();
@@ -19,6 +20,9 @@ export default function RiderPage() {
   const [ride, setRide] = useState(null);
   const [summary, setSummary] = useState(null);
   const [showEnd, setShowEnd] = useState(false);
+  // A URL-provided code is explicit intent (a fresh link/QR scan) and wins
+  // over a stale saved session from a previous, possibly different ride.
+  const [checkingResume, setCheckingResume] = useState(() => !codeFromUrl && loadSession()?.role === "rider");
   const audioRef = useRef(null);
 
   if (!audioRef.current) audioRef.current = new AlertAudio();
@@ -38,7 +42,12 @@ export default function RiderPage() {
     // The server pushes 'ride:summary' right after 'ride:ended' (see rideStore
     // broadcast in server/src/socket/index.js), so this only needs to silence audio.
     const onEnded = () => audioRef.current.stopAlarm();
-    const onSummary = (s) => setSummary(s);
+    // The ride is truly over once a summary exists — clear the saved session
+    // so a later reload doesn't try to silently reconnect to it again.
+    const onSummary = (s) => {
+      setSummary(s);
+      clearSession();
+    };
     const onState = (state) => {
       setRide(state);
       if (!state.distraction) audioRef.current.stopAlarm();
@@ -65,18 +74,55 @@ export default function RiderPage() {
   const handleConnected = useCallback((state) => {
     setRide(state);
     setConnected(true);
+    saveSession({ role: "rider", code: state.code, riderName: state.riderName || "" });
     if (typeof Notification !== "undefined" && Notification.permission === "default") {
       Notification.requestPermission().catch(() => {});
     }
     if (state.status === "ended") {
-      fetchSummary(state.code).then(setSummary).catch(() => {});
+      fetchSummary(state.code)
+        .then((s) => {
+          setSummary(s);
+          clearSession();
+        })
+        .catch(() => {});
     }
   }, []);
+
+  // Silently try to rejoin a ride the rider was following before a reload —
+  // no camera/permissions involved on this side, so no confirmation needed.
+  // The ride survives a disconnect server-side, so a still-live or
+  // recently-ended code just reconnects; anything else falls through to the
+  // normal connect screen.
+  useEffect(() => {
+    if (!checkingResume) return;
+    const session = loadSession();
+    if (!session || session.role !== "rider") {
+      setCheckingResume(false);
+      return;
+    }
+    const socket = getSocket();
+    if (!socket.connected) socket.connect();
+    socket.emit("join", { code: session.code, role: "rider", name: session.riderName || "Rider" }, (res) => {
+      if (res?.ok) handleConnected(res.state);
+      else clearSession();
+      setCheckingResume(false);
+    });
+  }, [checkingResume, handleConnected]);
 
   const endRide = () => {
     getSocket().emit("rider:end-ride");
     setShowEnd(false);
   };
+
+  if (checkingResume) {
+    return (
+      <Screen>
+        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <span style={{ fontSize: 13.5, color: colors.textMuted }}>Reconnecting…</span>
+        </div>
+      </Screen>
+    );
+  }
 
   if (!connected) {
     return <ConnectScreen initialCode={codeFromUrl} audio={audioRef.current} onConnected={handleConnected} />;
