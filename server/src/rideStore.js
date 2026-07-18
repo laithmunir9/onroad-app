@@ -4,6 +4,7 @@ import {
   ALARM_SEC,
   ALARM_SOUND_STOP_SEC,
   DISTRACTION_FLOOR_SEC,
+  RIDE_TTL_MS,
 } from "./constants.js";
 
 const rides = new Map();
@@ -70,6 +71,24 @@ function startTick(ride) {
 function stopTick(ride) {
   clearInterval(ride._tick);
   ride._tick = null;
+}
+
+// The rides Map never shrinks on its own — every ride ever created (live,
+// abandoned, or ended) stays in memory until swept. Age is measured from
+// createdAt regardless of status, so this also catches rides that never
+// got a rider or were never explicitly ended.
+export function sweepStaleRides(now = Date.now()) {
+  for (const [code, ride] of rides) {
+    if (now - ride.createdAt > RIDE_TTL_MS) {
+      clearAlertTimers(ride);
+      stopTick(ride);
+      rides.delete(code);
+    }
+  }
+}
+
+export function startCleanupSweep(intervalMs) {
+  return setInterval(() => sweepStaleRides(), intervalMs);
 }
 
 export function driverJoin(code, socketId, name) {
