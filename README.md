@@ -61,8 +61,8 @@ on the other and enter the code.
   code. State is in-memory and lives for the process lifetime — fine for a
   single ride session, not meant to survive a server restart.
 - **Summary** is computed server-side from the real logged events when the
-  rider ends the ride (`rideStore.summarize`), including capturing whatever
-  distraction was still in progress at that moment.
+  ride ends — either side can end it (`rideStore.summarize`), including
+  capturing whatever distraction was still in progress at that moment.
 
 ## Where this diverges from the prototype
 
@@ -86,6 +86,7 @@ never needed them for two real, independently-connected devices:
   soft-alert / alarm / paused), not a simulated score.
 - **QR code is real and scannable** (encodes a `/rider/<code>` join URL),
   replacing the prototype's decorative fake QR pattern.
-- **`onroad-logo.png` doesn't exist in the handoff bundle** — the app mark
-  (`client/src/components/Logo.jsx`) is recreated from the wheel/eye motif
-  in the bundle's own thumbnail template rather than invented from scratch.
+- **App mark** (`client/src/components/Logo.jsx`) renders a real logo image
+  (`client/public/logo.png`) — the icon cropped out of the prototype's
+  eye/road mark, with the wordmark left off since every usage site already
+  renders "OnRoad" as separate text next to it.
