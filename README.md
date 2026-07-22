@@ -90,3 +90,7 @@ never needed them for two real, independently-connected devices:
   (`client/public/logo.png`) — the icon cropped out of the prototype's
   eye/road mark, with the wordmark left off since every usage site already
   renders "OnRoad" as separate text next to it.
+
+## License
+
+MIT — see [LICENSE](./LICENSE).
