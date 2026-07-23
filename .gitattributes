@@ -1,0 +1,4 @@
+# The original Claude Design prototype export, kept for provenance (see
+# README) — not the real implementation. Excluded from GitHub's language
+# stats and diff/review views so they reflect client/ and server/ instead.
+design-reference/** linguist-vendored=true
