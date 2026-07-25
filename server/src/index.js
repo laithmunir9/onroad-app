@@ -11,6 +11,11 @@ const PORT = process.env.PORT || 4000;
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "*";
 
 const app = express();
+// Render (and similar PaaS hosts) sit as a single reverse-proxy hop in front
+// of this process — without this, req.ip resolves to the proxy's address,
+// not the real client, which would make the rate limiter key everyone into
+// one shared bucket.
+app.set("trust proxy", 1);
 app.use(cors({ origin: CLIENT_ORIGIN }));
 app.use(express.json());
 
