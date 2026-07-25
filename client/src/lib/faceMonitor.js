@@ -13,17 +13,49 @@ const VISION_CDN = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14
 const WASM_URL = `${VISION_CDN}/wasm`;
 const MODEL_URL =
   "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task";
+const MODEL_FETCH_TIMEOUT_MS = 20000;
 
 let landmarkerPromise = null;
+
+async function fetchWithTimeout(url, timeoutMs) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, { signal: controller.signal });
+    if (!res.ok) throw new Error(`Fetch failed: ${res.status} ${res.statusText}`);
+    return await res.arrayBuffer();
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+// tasks-vision's own modelAssetPath loader fetches this file through an
+// internal, unobservable path (its own fetch + Cache Storage handling) with
+// no timeout of its own — if that stalls, it hangs until the browser's
+// connection-idle timeout kills it instead of failing fast or retrying.
+// Fetching it ourselves first, with an explicit timeout and one retry, and
+// handing the raw bytes to FaceLandmarker via modelAssetBuffer instead,
+// gives us that control back.
+async function fetchModelBuffer() {
+  try {
+    return new Uint8Array(await fetchWithTimeout(MODEL_URL, MODEL_FETCH_TIMEOUT_MS));
+  } catch {
+    return new Uint8Array(await fetchWithTimeout(MODEL_URL, MODEL_FETCH_TIMEOUT_MS));
+  }
+}
 
 async function loadFaceLandmarker() {
   if (!landmarkerPromise) {
     landmarkerPromise = (async () => {
       const vision = await import(/* @vite-ignore */ VISION_CDN);
       const { FaceLandmarker, FilesetResolver } = vision;
+      // Sequential, not concurrent: the WASM runtime finishes setting up
+      // before the model fetch starts, so the two never compete for
+      // bandwidth or main-thread time with each other.
       const filesetResolver = await FilesetResolver.forVisionTasks(WASM_URL);
+      const modelAssetBuffer = await fetchModelBuffer();
       return FaceLandmarker.createFromOptions(filesetResolver, {
-        baseOptions: { modelAssetPath: MODEL_URL, delegate: "GPU" },
+        baseOptions: { modelAssetBuffer, delegate: "GPU" },
         runningMode: "VIDEO",
         numFaces: 1,
         outputFaceBlendshapes: true,
