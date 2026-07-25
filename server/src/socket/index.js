@@ -106,7 +106,7 @@ export function registerSocketHandlers(io) {
     });
 
     socket.on("driver:end-ride", () => {
-      if (socket.data.role !== "driver" || !socket.data.code) return;
+      if (!isCurrentDriverSocket(socket)) return;
       endRide(socket.data.code);
     });
 
