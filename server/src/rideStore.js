@@ -2,7 +2,7 @@ import { generateRideCode } from "./codeGen.js";
 import {
   SOFT_ALERT_SEC,
   ALARM_SEC,
-  ALARM_SOUND_STOP_SEC,
+  ALARM_SOUND_DURATION_SEC,
   DISTRACTION_FLOOR_SEC,
   RIDE_TTL_MS,
 } from "./constants.js";
@@ -150,7 +150,7 @@ export function startDistraction(code, type) {
     broadcast(ride.code, publicState(ride), { type: "alert:alarm" });
     ride._alarmStopTimer = setTimeout(() => {
       broadcast(ride.code, publicState(ride), { type: "alert:sound-stop" });
-    }, ALARM_SOUND_STOP_SEC * 1000);
+    }, ALARM_SOUND_DURATION_SEC * 1000);
   }, ALARM_SEC * 1000);
 
   broadcast(ride.code, publicState(ride));

@@ -74,7 +74,7 @@ of a single continuous distraction:
 | --- | --- | --- |
 | 5s | `alert:soft` | Soft alert |
 | 15s | `alert:alarm` | Full alarm, sound starts |
-| 75s | `alert:sound-stop` | Sound auto-stops 60s after the alarm fires; the alert state itself is unchanged |
+| 60s | `alert:sound-stop` | Sound auto-stops after 45s of alarm; the alert state itself is unchanged |
 
 ## Where this diverges from the prototype
 
