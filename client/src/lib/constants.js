@@ -1,6 +1,5 @@
 export const SOFT_ALERT_SEC = 5;
 export const ALARM_SEC = 15;
-export const ALARM_SOUND_DURATION_SEC = 45; // mirrors the server; the rider stops the sound on alert:sound-stop
 export const DISTRACTION_FLOOR_SEC = 0.8;
 export const SPEED_THRESHOLD_MPH = 5;
 export const EYE_OPEN_THRESHOLD = 0.2; // below this = "closed"
