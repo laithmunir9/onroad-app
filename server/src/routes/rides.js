@@ -11,7 +11,7 @@ const createRideLimiter = createRateLimiter({ windowMs: 10 * 60 * 1000, max: 10 
 
 router.post("/", (req, res) => {
   if (!createRideLimiter.check(req.ip)) {
-    return res.status(429).json({ error: "Too many rides created — try again in a few minutes." });
+    return res.status(429).json({ error: "Too many rides created. Try again in a few minutes." });
   }
 
   const { driverName, carLabel } = req.body || {};

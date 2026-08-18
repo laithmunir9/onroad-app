@@ -42,7 +42,7 @@ export default function RiderPage() {
     // The server pushes 'ride:summary' right after 'ride:ended' (see rideStore
     // broadcast in server/src/socket/index.js), so this only needs to silence audio.
     const onEnded = () => audioRef.current.stopAlarm();
-    // The ride is truly over once a summary exists — clear the saved session
+    // The ride is truly over once a summary exists. Clear the saved session
     // so a later reload doesn't try to silently reconnect to it again.
     const onSummary = (s) => {
       setSummary(s);
@@ -88,7 +88,7 @@ export default function RiderPage() {
     }
   }, []);
 
-  // Silently try to rejoin a ride the rider was following before a reload —
+  // Silently try to rejoin a ride the rider was following before a reload.
   // no camera/permissions involved on this side, so no confirmation needed.
   // The ride survives a disconnect server-side, so a still-live or
   // recently-ended code just reconnects; anything else falls through to the
@@ -449,7 +449,7 @@ function RideScreen({ ride, phase, onAskEnd, showEnd, onCancelEnd, onConfirmEnd 
 
       {!ride.speedOk && (
         <div style={{ display: "flex", alignItems: "center", gap: 9, background: "rgba(138,160,200,.12)", border: "1px solid rgba(138,160,200,.3)", borderRadius: 14, padding: "10px 14px", marginBottom: 18 }}>
-          <span style={{ fontSize: 12.5, fontWeight: 600, color: colors.textFaint }}>Vehicle stopped · monitoring paused</span>
+          <span style={{ fontSize: 12.5, fontWeight: 600, color: colors.textFaint }}>Vehicle stopped. Monitoring paused</span>
         </div>
       )}
 
@@ -462,7 +462,7 @@ function RideScreen({ ride, phase, onAskEnd, showEnd, onCancelEnd, onConfirmEnd 
         />
         <div style={{ textAlign: "center" }}>
           <div style={{ fontSize: 24, fontWeight: 700, color: isSoft ? colors.orange : colors.green, letterSpacing: "-.01em" }}>{isSoft ? "Caution" : "All clear"}</div>
-          <div style={{ fontSize: 13.5, color: colors.textMuted, marginTop: 6 }}>{isSoft ? `Distracted for ${secs}s — watching` : "Driver is focused on the road"}</div>
+          <div style={{ fontSize: 13.5, color: colors.textMuted, marginTop: 6 }}>{isSoft ? `Distracted for ${secs}s. Watching` : "Driver is focused on the road"}</div>
         </div>
       </div>
 

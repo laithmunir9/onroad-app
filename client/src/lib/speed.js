@@ -65,7 +65,7 @@ export function startSpeedTracking(onUpdate) {
   };
 }
 
-// Coarse movement proxy from accelerometer variance — DeviceMotion can't give
+// Coarse movement proxy from accelerometer variance. DeviceMotion can't give
 // absolute speed without drift-prone integration, so this only distinguishes
 // "stationary" from "moving" rather than reporting a real mph figure.
 function startMotionFallback(emit) {

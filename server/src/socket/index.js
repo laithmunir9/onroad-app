@@ -17,7 +17,7 @@ import { sanitizeName } from "../sanitize.js";
 const room = (code) => `ride:${code}`;
 
 // Join attempts are the actual brute-force vector for a 6-character ride
-// code — generous enough for a mistyped code or a legitimate resume/rejoin,
+// code. Generous enough for a mistyped code or a legitimate resume/rejoin,
 // low enough to make guessing codes at scale impractical.
 const joinLimiter = createRateLimiter({ windowMs: 5 * 60 * 1000, max: 20 });
 
@@ -28,7 +28,7 @@ function clientIp(socket) {
 }
 
 // Only the socket that most recently joined as driver for this ride code
-// "is" the driver — driverJoin keeps driverSocketId current on every join,
+// "is" the driver. driverJoin keeps driverSocketId current on every join,
 // including a legitimate resume-after-reload, so this also handles that
 // case correctly without extra work.
 function isCurrentDriverSocket(socket) {
@@ -55,7 +55,7 @@ export function registerSocketHandlers(io) {
 
     socket.on("join", ({ code, role, name }, ack) => {
       if (!joinLimiter.check(clientIp(socket))) {
-        if (typeof ack === "function") ack({ ok: false, error: "Too many attempts — try again in a few minutes." });
+        if (typeof ack === "function") ack({ ok: false, error: "Too many attempts. Try again in a few minutes." });
         return;
       }
 

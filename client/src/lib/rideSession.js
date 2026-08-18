@@ -2,13 +2,13 @@ const KEY = "onroad:session";
 
 // Tracks "I was mid-ride" across a page reload, so the driver/rider can be
 // offered a way back in. The ride itself already survives a disconnect
-// server-side (see rideStore's handleDisconnect) — this is only what the
+// server-side (see rideStore's handleDisconnect). This is only what the
 // client needs to remember which ride and role to try rejoining.
 export function saveSession(session) {
   try {
     localStorage.setItem(KEY, JSON.stringify(session));
   } catch {
-    /* storage unavailable (private browsing, quota) — resuming just won't work */
+    /* Storage unavailable (private browsing, quota). Resuming just won't work. */
   }
 }
 

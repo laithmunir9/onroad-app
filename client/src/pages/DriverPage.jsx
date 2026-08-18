@@ -57,7 +57,7 @@ export default function DriverPage() {
 
   // A saved session means the driver was mid-ride before a reload. The ride
   // itself already survives a disconnect server-side (see rideStore's
-  // handleDisconnect) — confirm it's still live before offering to resume,
+  // handleDisconnect): confirm it's still live before offering to resume,
   // since a stale/expired code should just fall through to a normal start.
   useEffect(() => {
     if (step !== "checking") return;
@@ -113,7 +113,7 @@ export default function DriverPage() {
       saveSession({ role: "driver", code, driverName: name, carLabel: label });
 
       // A driver can now end a ride and start a fresh one (or resume one)
-      // without reloading the page — drop any listener from a prior ride on
+      // without reloading the page. Drop any listener from a prior ride on
       // this same socket before attaching a new one.
       socket.off("ride:state");
       socket.on("ride:state", (state) => setRide(state));
@@ -262,7 +262,7 @@ export default function DriverPage() {
                 </div>
                 <div style={{ fontSize: 24, fontWeight: 700 }}>Start a ride</div>
                 <div style={{ fontSize: 13.5, color: colors.textMuted, marginTop: 8, lineHeight: 1.5 }}>
-                  Your camera watches the road ahead of you — no video ever leaves this device, only distraction events.
+                  Your camera watches the road ahead of you. No video ever leaves this device, only distraction events.
                 </div>
               </div>
 
@@ -349,9 +349,9 @@ function MonitoringScreen({
 
   const palette = {
     calm: { ring: "rgba(53,214,164,.3)", bg: "radial-gradient(circle at 50% 40%,#0d2c56,#071a3a)", color: colors.green, chip: "rgba(53,214,164,.14)", word: "Focused", sub: "Focused on the road", icon: (color) => <CheckIcon size={16} color={color} strokeWidth={2.6} /> },
-    paused: { ring: "rgba(138,160,200,.35)", bg: "radial-gradient(circle at 50% 40%,#1a2438,#0c1220)", color: "#8aa0c8", chip: "rgba(138,160,200,.16)", word: "Standby", sub: "Vehicle stopped — monitoring paused", icon: (color) => <ClockIcon size={16} color={color} strokeWidth={2.2} /> },
+    paused: { ring: "rgba(138,160,200,.35)", bg: "radial-gradient(circle at 50% 40%,#1a2438,#0c1220)", color: "#8aa0c8", chip: "rgba(138,160,200,.16)", word: "Standby", sub: "Vehicle stopped. Monitoring paused", icon: (color) => <ClockIcon size={16} color={color} strokeWidth={2.2} /> },
     soft: { ring: "rgba(245,166,35,.45)", bg: "radial-gradient(circle at 50% 40%,#3a2c0d,#1a1405)", color: colors.orange, chip: "rgba(245,166,35,.16)", word: "Caution", sub: `${distraction?.type === "eyes_closed" ? "Eyes closed" : "Looking away"} · ${secs}s`, icon: (color) => <EyeOffIcon size={16} color={color} strokeWidth={2.2} /> },
-    alarm: { ring: "rgba(255,85,69,.45)", bg: "radial-gradient(circle at 50% 40%,#5e1512,#2a0906)", color: colors.red, chip: "rgba(255,85,69,.16)", word: "Alert", sub: `${distraction?.type === "eyes_closed" ? "Eyes closed" : "Looking away"} · ${secs}s — pull over`, icon: (color) => <AlertTriangleIcon size={16} color={color} strokeWidth={2.4} /> },
+    alarm: { ring: "rgba(255,85,69,.45)", bg: "radial-gradient(circle at 50% 40%,#5e1512,#2a0906)", color: colors.red, chip: "rgba(255,85,69,.16)", word: "Alert", sub: `${distraction?.type === "eyes_closed" ? "Eyes closed" : "Looking away"} · ${secs}s. Pull over`, icon: (color) => <AlertTriangleIcon size={16} color={color} strokeWidth={2.4} /> },
   }[phase];
 
   const ambient = {
@@ -463,7 +463,7 @@ function MonitoringScreen({
           <AlertTriangleIcon size={26} color="#fff" strokeWidth={2.4} />
           <div>
             <div style={{ fontSize: 16, fontWeight: 800, letterSpacing: ".02em" }}>EYES ON THE ROAD</div>
-            <div style={{ fontSize: 12, color: "#ffd7d3" }}>Wake up — pull over if drowsy.</div>
+            <div style={{ fontSize: 12, color: "#ffd7d3" }}>Wake up. Pull over if drowsy.</div>
           </div>
         </div>
       )}

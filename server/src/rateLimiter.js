@@ -1,6 +1,6 @@
 // Small in-memory fixed-window rate limiter, keyed by caller-supplied string
 // (typically an IP). Mirrors rideStore's own sweep pattern rather than
-// pulling in a dependency — this process already treats in-memory state as
+// pulling in a dependency. This process already treats in-memory state as
 // fine for its lifetime.
 export function createRateLimiter({ windowMs, max }) {
   const hits = new Map(); // key -> { count, resetAt }

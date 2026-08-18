@@ -32,7 +32,7 @@ export default function QrScanner({ onDecode, onClose }) {
         await videoRef.current.play().catch(() => {});
         loop();
       } catch {
-        if (!cancelled) setError("Camera access denied — enter the code below instead.");
+        if (!cancelled) setError("Camera access denied. Enter the code below instead.");
       }
     }
 

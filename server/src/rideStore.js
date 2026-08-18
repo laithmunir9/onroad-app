@@ -73,7 +73,7 @@ function stopTick(ride) {
   ride._tick = null;
 }
 
-// The rides Map never shrinks on its own — every ride ever created (live,
+// The rides Map never shrinks on its own. Every ride ever created (live,
 // abandoned, or ended) stays in memory until swept. Age is measured from
 // createdAt regardless of status, so this also catches rides that never
 // got a rider or were never explicitly ended.
@@ -227,7 +227,7 @@ export function summarize(ride) {
       ? "Focused and alert throughout the ride."
       : score >= 72
       ? "A few brief distractions, mostly attentive."
-      : "Several distraction events — worth a check-in.";
+      : "Several distraction events. Worth a check-in.";
   const maxT = Math.max(ride.elapsed, ...events.map((e) => e.timestamp), 1);
   const timeline = events.map((e) => ({
     type: e.type,

@@ -6,7 +6,7 @@ import {
   DISTRACTION_FLOOR_SEC,
 } from "./constants";
 
-// Loaded from CDN per spec — no local MediaPipe dependency. Also means a real
+// Loaded from CDN per spec. No local MediaPipe dependency. Also means a real
 // external driver-facing camera can later feed the same <video> element this
 // module already reads from; nothing here assumes "webcam" specifically.
 const VISION_CDN = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
@@ -31,7 +31,7 @@ async function fetchWithTimeout(url, timeoutMs) {
 
 // tasks-vision's own modelAssetPath loader fetches this file through an
 // internal, unobservable path (its own fetch + Cache Storage handling) with
-// no timeout of its own — if that stalls, it hangs until the browser's
+// no timeout of its own. If that stalls, it hangs until the browser's
 // connection-idle timeout kills it instead of failing fast or retrying.
 // Fetching it ourselves first, with an explicit timeout and one retry, and
 // handing the raw bytes to FaceLandmarker via modelAssetBuffer instead,
@@ -104,8 +104,8 @@ export class FaceMonitor {
     this.landmarker = null;
     this.rafId = null;
     this.eyeSamples = [];
-    this.pending = null; // { type, since } — condition seen, not yet past the floor
-    this.active = null; // { type, since } — promoted, reported to caller
+    this.pending = null; // { type, since }: condition seen, not yet past the floor
+    this.active = null; // { type, since }: promoted, reported to caller
     this.running = false;
   }
 
@@ -179,7 +179,7 @@ export class FaceMonitor {
         this.onDistractionStart(condition);
       }
     } else {
-      // gaze returned to center — reset immediately, no accumulation across glances
+      // Gaze returned to center. Reset immediately, no accumulation across glances.
       this.resetCondition();
     }
   }

@@ -1,6 +1,6 @@
 export const NAME_MAX_LEN = 40;
 
-// Absent/empty values resolve to `fallback` — only a present-but-wrong-typed
+// Absent/empty values resolve to `fallback`. Only a present-but-wrong-typed
 // value (e.g. a number, array, or object where a name/label was expected) is
 // treated as a real validation failure and reported via `ok: false`.
 export function sanitizeName(value, fallback, maxLen = NAME_MAX_LEN) {
